@@ -69,6 +69,9 @@ public class SimpleRunner implements Runner{
 		} catch (InvocationTargetException err){
 			res.setCorrect(false);
 			String msg = err.getCause() == null ? err.getMessage() : err.getCause() .getMessage();
+			if (msg == null){
+				msg = "null";
+			}
 			res.setMsg("Error!!!!! " + msg.replaceAll("<","(").replaceAll(">",")"));
 			res.setExc(err.getCause());
 		}

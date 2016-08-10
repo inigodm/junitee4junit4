@@ -69,7 +69,11 @@ public class HTMLFormater {
 		pw.println("</td>");
 		if (!tr.isOk()){
 			pw.println("<td style='background-color:#ca6059'>");
-			pw.println(tr.getExc().getMessage().replaceAll("<","(").replaceAll(">",")"));
+			String msg = tr.getExc().getCause() == null ? tr.getExc().getMessage() : tr.getExc().getCause() .getMessage();
+			if (msg == null){
+				msg = "null";
+			}
+			pw.println(msg.replaceAll("<","(").replaceAll(">",")"));
 			pw.println("</td>");
 			pw.println("<td style='background-color:#ca6059'>");
 			pw.println(tr.getMsg());
