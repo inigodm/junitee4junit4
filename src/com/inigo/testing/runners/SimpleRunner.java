@@ -68,7 +68,8 @@ public class SimpleRunner implements Runner{
 			res.setExc(e);
 		} catch (InvocationTargetException err){
 			res.setCorrect(false);
-			res.setMsg("Error!!!!! " + err.getCause().getMessage().replaceAll("<","(").replaceAll(">",")"));
+			String msg = err.getCause() == null ? err.getMessage() : err.getCause() .getMessage();
+			res.setMsg("Error!!!!! " + msg.replaceAll("<","(").replaceAll(">",")"));
 			res.setExc(err.getCause());
 		}
 		return res;
