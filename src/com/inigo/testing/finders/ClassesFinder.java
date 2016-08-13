@@ -23,7 +23,9 @@ public class ClassesFinder implements Finder<String> {
 		String aux;
 		try {
 			while ((aux = br.readLine()) != null){
-				res.add(aux);
+				if (!"".equals(aux)){
+					res.add(aux.trim());
+				}
 			}
 		} catch (IOException e) {
 			throw new UnitTestingException(e);
