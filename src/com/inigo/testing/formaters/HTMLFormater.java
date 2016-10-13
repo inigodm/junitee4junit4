@@ -55,9 +55,14 @@ public class HTMLFormater extends Formater{
 	private void printMethod(int index, TestResult tr){
 		boolean trOk=tr.isOk();
 		pw.println("<td style='background-color:" + (trOk ? "#4caf50" : "#ca6059") + "'>");
-		if (!trOk){
+		if (!trOk || !tr.getLogs().isEmpty()){
 			pw.println("<div>");
-			pw.println("<button type='button' class='btn btn-danger' data-toggle='collapse' data-target='#demo" + index + "'>+</button>");
+			if (!trOk){
+				pw.println("<button type='button' class='btn btn-danger' data-toggle='collapse' data-target='#demo" +tr.getName()+ index + "'>err</button>");
+			}
+			if (!tr.getLogs().isEmpty()){
+				pw.println("<button type='button' class='btn btn-info' data-toggle='collapse' data-target='#info" +tr.getName()+ index + "'>inf</button>");
+			}
 		}
 		pw.println(tr.getName());
 		if (!trOk){
@@ -77,7 +82,7 @@ public class HTMLFormater extends Formater{
 			pw.println(tr.getMsg());
 			pw.println("</td>");
 			pw.println("</tr><tr style='background-color:#ca6059'><td colspan='2'>");
-			pw.println("<div id='demo" + index +"' class='collapse'>");
+			pw.println("<div id='demo" +tr.getName()+ index +"' class='collapse'>");
 			for (StackTraceElement s : tr.getExc().getStackTrace()){
 				pw.println(String.format("%s.%s (%s);<br>", s.getClassName(), s.getMethodName(), s.getLineNumber()));
 			}
@@ -88,14 +93,17 @@ public class HTMLFormater extends Formater{
 			pw.println(((double)(tr.getTime())) + " milisecs");
 			pw.println("</td>");
 		}
+		printLog(index, tr);
 		pw.println("</tr>");
+		
+			
+	}
+	
+	public void printLog(int index, TestResult tr){
 		if (!tr.getLogs().isEmpty()){
 			pw.println("<tr>");
-			pw.println("<td style='background-color:#cccccc' colspan='2'>");
-			pw.println("<div>");
-			pw.println("<button type='button' class='btn btn-info' data-toggle='collapse' data-target='#info" + index + "'>+</button>");
-			pw.println("</div>");
-			pw.println("<div id='info" + index +"' class='collapse' style='background-color:white'>");
+			pw.println("<td style='background-color:#cccccc' colspan='3'>");
+			pw.println("<div id='info" +tr.getName()+ index +"' class='collapse' style='background-color:#cccccc'>");
 			for (String log : tr.getLogs()){
 				pw.println(String.format("%s<br>", log));
 			}
@@ -103,6 +111,5 @@ public class HTMLFormater extends Formater{
 			pw.println("</td>");
 			pw.println("</tr>");
 		}
-			
 	}
 }
