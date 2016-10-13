@@ -1,7 +1,6 @@
 package com.inigo.testing.servlets;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -13,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.inigo.testing.exceptions.UnitTestingException;
-import com.inigo.testing.formaters.HTMLFormater;
+import com.inigo.testing.formaters.MainPageFormater;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.runners.Runner;
 import com.inigo.testing.runners.SimpleRunner;
@@ -21,9 +20,9 @@ import com.inigo.testing.runners.SimpleRunner;
 /**
  * Servlet implementation class TestingServlet
  */
-//@WebServlet(urlPatterns="/test",
+//@WebServlet(urlPatterns="/maintest",
 //			name="TestingServlet")
-public class TestingServlet extends HttpServlet {
+public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
 	// Quite ugly, but functional: this way I can access both in tests
@@ -33,7 +32,7 @@ public class TestingServlet extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public TestingServlet() {
+    public MainServlet() {
         super();
     }
 
@@ -41,12 +40,11 @@ public class TestingServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("doget");
 		ServletContext context = getServletContext();
 		try {
 			Runner sr = new SimpleRunner();
 			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCases"));
-			HTMLFormater form = new HTMLFormater(response.getWriter());
+			MainPageFormater form = new MainPageFormater(response.getWriter());
 			form.format(res);
 		} catch (UnitTestingException e) {
 			e.printStackTrace();
@@ -57,23 +55,8 @@ public class TestingServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("dopost");
-		ServletContext context = getServletContext();
-		try {
-			Runner sr = new SimpleRunner();
-			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCases"));
-			List<TestClass> execute = new ArrayList<>();
-			for (TestClass tc : res){
-				if (null!=request.getParameter(tc.getName())){
-					execute.add(tc);
-				}
-			}
-			HTMLFormater form = new HTMLFormater(response.getWriter());
-			form.format(execute);
-		} catch (UnitTestingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// TODO Auto-generated method stub
+		doGet(request, response);
 	}
 
 }

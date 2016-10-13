@@ -15,13 +15,12 @@ import junit.framework.TestCase;
  * @author inigo
  *
  */
-public class HTMLFormater {
-	PrintWriter pw;
+public class HTMLFormater extends Formater{
 	
 	public HTMLFormater(PrintWriter pw){
-		this.pw = pw;
+		super(pw);
 	}
-	
+
 	public void format(List<TestClass> tests){
 		pw.println("<!DOCTYPE html>");
 		pw.println("<html lang='en'>");
@@ -39,17 +38,15 @@ public class HTMLFormater {
 		pw.println("</body>");
 		pw.println("</html>");
 	}
-
-	private void printClasses(TestClass tc) {
+	
+	protected void printClasses(TestClass tc) {
 		pw.println("<table class='table table-striped' style='background-color:" + (tc.isOk() ? "green" : "red") + "'>");
 		pw.println("<thead><tr><th>Class " + tc.getName() + "<th></tr></thead>");
 		pw.println("</thead>");
 		pw.println("<tbody>");
-		int i = 0;
-		for (TestResult tr : tc.getResults()){
+		for (int i = 0; i < tc.getResults().size(); i++){
 			pw.println("<tr>");
-			printMethod(i, tr);
-			i++;
+			printMethod(i, tc.getResults().get(i));
 			pw.println("</tr>");
 		}
 		pw.println("</tbody></table>");
