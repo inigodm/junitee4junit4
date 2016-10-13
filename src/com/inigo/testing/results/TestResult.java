@@ -1,6 +1,8 @@
 package com.inigo.testing.results;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestResult {
 	Method method;
@@ -8,6 +10,8 @@ public class TestResult {
 	Object result;
 	String msg;
 	Throwable exc;
+	List<String> logs = new ArrayList<>();
+	
 	long time;
 	
 	boolean isCorrect;
@@ -54,6 +58,12 @@ public class TestResult {
 	public void setTime(long time) {
 		System.out.println("time is " + time);
 		this.time = time;
+	}
+	public List<String> getLogs() {
+		return logs;
+	}
+	public void setLogs(List<String> logs) {
+		this.logs = logs;
 	}
 	@Override
 	public String toString() {

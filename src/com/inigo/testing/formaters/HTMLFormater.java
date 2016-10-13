@@ -64,6 +64,7 @@ public class HTMLFormater extends Formater{
 			pw.println("</div>");
 		}
 		pw.println("</td>");
+		
 		if (!tr.isOk()){
 			pw.println("<td style='background-color:#ca6059'>");
 			String msg = tr.getExc().getCause() == null ? tr.getExc().getMessage() : tr.getExc().getCause() .getMessage();
@@ -81,11 +82,27 @@ public class HTMLFormater extends Formater{
 				pw.println(String.format("%s.%s (%s);<br>", s.getClassName(), s.getMethodName(), s.getLineNumber()));
 			}
 			pw.println("</div>");
-			pw.println("<td></tr><tr>");
+			pw.println("<td>");
 		}else{
 			pw.println("<td style='background-color:#4caf50' colspan='2'>");
 			pw.println(((double)(tr.getTime())) + " milisecs");
 			pw.println("</td>");
 		}
+		pw.println("</tr>");
+		if (!tr.getLogs().isEmpty()){
+			pw.println("<tr>");
+			pw.println("<td style='background-color:#cccccc' colspan='2'>");
+			pw.println("<div>");
+			pw.println("<button type='button' class='btn btn-info' data-toggle='collapse' data-target='#info" + index + "'>+</button>");
+			pw.println("</div>");
+			pw.println("<div id='info" + index +"' class='collapse' style='background-color:white'>");
+			for (String log : tr.getLogs()){
+				pw.println(String.format("%s<br>", log));
+			}
+			pw.println("</div>");
+			pw.println("</td>");
+			pw.println("</tr>");
+		}
+			
 	}
 }

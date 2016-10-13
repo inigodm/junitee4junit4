@@ -11,6 +11,7 @@ import java.util.List;
 import com.inigo.testing.exceptions.UnitTestingException;
 import com.inigo.testing.finders.ClassesFinder;
 import com.inigo.testing.finders.MethodFinder;
+import com.inigo.testing.logging.Logger;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
 
@@ -75,6 +76,7 @@ public class SimpleRunner implements Runner{
 			res.setMsg("Error!!!!! " + msg.replaceAll("<","(").replaceAll(">",")"));
 			res.setExc(err.getCause());
 		}
+		res.setLogs(Logger.getLogs());
 		return res;
 	}
 }
