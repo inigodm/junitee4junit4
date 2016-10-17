@@ -12,7 +12,7 @@ import com.inigo.testing.exceptions.UnitTestingException;
 public class ClassesFinder implements Finder<String> {
 	BufferedReader br;
 	
-	List<String> res = new ArrayList<>();
+	List<String> res = new ArrayList<String>();
 	
 	public ClassesFinder(InputStream is) throws UnitTestingException{
 		 br = new BufferedReader(new InputStreamReader(is));		

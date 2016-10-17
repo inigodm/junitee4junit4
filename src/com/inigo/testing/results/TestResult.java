@@ -10,7 +10,7 @@ public class TestResult {
 	Object result;
 	String msg;
 	Throwable exc;
-	List<String> logs = new ArrayList<>();
+	List<String> logs = new ArrayList<String>();
 	
 	long time;
 	

@@ -5,8 +5,6 @@ import java.util.List;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
 
-import junit.framework.TestCase;
-
 /**
  * 
  */
@@ -54,7 +52,7 @@ public class HTMLFormater extends Formater{
 	
 	private void printMethod(int index, TestResult tr){
 		boolean trOk=tr.isOk();
-		pw.println("<td style='background-color:" + (trOk ? "#4caf50" : "#ca6059") + "'>");
+		pw.println("<td style='background-color:" + (trOk ? "#4caf50' colspan='2" : "#ca6059") + "'>");
 		if (!trOk || !tr.getLogs().isEmpty()){
 			pw.println("<div>");
 			if (!trOk){
@@ -89,7 +87,7 @@ public class HTMLFormater extends Formater{
 			pw.println("</div>");
 			pw.println("<td>");
 		}else{
-			pw.println("<td style='background-color:#4caf50' colspan='2'>");
+			pw.println("<td style='background-color:#4caf50'>");
 			pw.println(((double)(tr.getTime())) + " milisecs");
 			pw.println("</td>");
 		}

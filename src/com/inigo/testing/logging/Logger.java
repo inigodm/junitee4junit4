@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Logger {
-	static List<String> arr = new ArrayList<>();
+	static List<String> arr = new ArrayList<String>();
 	
 	public static void log(String log){
 		StackTraceElement elem = Thread.currentThread().getStackTrace()[1];
@@ -13,7 +13,7 @@ public class Logger {
 	
 	public static List<String> getLogs(){
 		List<String> aux = arr;
-		arr = new ArrayList<>();
+		arr = new ArrayList<String>();
 		return aux;
 	}
 }

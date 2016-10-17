@@ -19,6 +19,15 @@ public class SimpleRunner implements Runner{
 	MethodFinder methodFinder;
 	ClassesFinder classFinder;
 	BufferedReader br;
+	List<String> classNames = null;
+	
+	public SimpleRunner(List<String> classNames){
+		this.classNames = classNames;
+	}
+	
+	public SimpleRunner(){
+		
+	}
 	
 	public List<TestClass> run(InputStream is) throws UnitTestingException{
 		classFinder = new ClassesFinder(is);
@@ -26,8 +35,10 @@ public class SimpleRunner implements Runner{
 	}
 	
 	private List<TestClass> buildResponse() throws UnitTestingException{
-		List<String> classNames = classFinder.find().getResults();
-		List<TestClass> res = new ArrayList<>();
+		if (classNames == null){
+			classNames = classFinder.find().getResults();
+		}
+		List<TestClass> res = new ArrayList<TestClass>();
 		for (String className : classNames){
 			res.add(testClass(className));
 		}
@@ -46,7 +57,7 @@ public class SimpleRunner implements Runner{
 	
 	
 	private List<TestResult> calcResults() throws UnitTestingException{
-		List<TestResult> res = new ArrayList<>();
+		List<TestResult> res = new ArrayList<TestResult>();
 		for (Method method : methodFinder.find().getResults()){
 			res.add(testMethod(method));	
 		}
@@ -62,8 +73,7 @@ public class SimpleRunner implements Runner{
 			res.setResult(method.invoke(obj));
 			res.setTime((new Date()).getTime() - time);
 			res.setCorrect(true);
-		} catch (IllegalAccessException | IllegalArgumentException |
-				InstantiationException e) {
+		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 			res.setCorrect(false);
 			res.setExc(e);
@@ -75,6 +85,10 @@ public class SimpleRunner implements Runner{
 			}
 			res.setMsg("Error!!!!! " + msg.replaceAll("<","(").replaceAll(">",")"));
 			res.setExc(err.getCause());
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+			res.setCorrect(false);
+			res.setExc(e);
 		}
 		res.setLogs(Logger.getLogs());
 		return res;

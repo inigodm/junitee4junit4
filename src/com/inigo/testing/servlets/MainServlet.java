@@ -3,10 +3,8 @@ package com.inigo.testing.servlets;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.inigo.testing.exceptions.UnitTestingException;
 import com.inigo.testing.formaters.MainPageFormater;
 import com.inigo.testing.results.TestClass;
+import com.inigo.testing.runners.ClassFinderRunner;
 import com.inigo.testing.runners.Runner;
-import com.inigo.testing.runners.SimpleRunner;
 
 /**
  * Servlet implementation class TestingServlet
@@ -42,8 +40,8 @@ public class MainServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext context = getServletContext();
 		try {
-			Runner sr = new SimpleRunner();
-			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCases"));
+			Runner sr = new ClassFinderRunner();
+			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
 			MainPageFormater form = new MainPageFormater(response.getWriter());
 			form.format(res);
 		} catch (UnitTestingException e) {

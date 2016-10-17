@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import com.inigo.testing.results.TestClass;
-import com.inigo.testing.results.TestResult;
 
 public class MainPageFormater extends Formater{
 	

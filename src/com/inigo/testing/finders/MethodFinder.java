@@ -9,7 +9,7 @@ import com.inigo.testing.exceptions.UnitTestingException;
 public class MethodFinder implements Finder<Method>{
 	
 	String classPath;
-	List<Method> methods = new ArrayList<>();
+	List<Method> methods = new ArrayList<Method>();
 	Class<?> clazz;
 	
 	public MethodFinder(String classPath) throws UnitTestingException{
@@ -26,7 +26,9 @@ public class MethodFinder implements Finder<Method>{
 					methods.add(method);
 				}
 			}
-		} catch (SecurityException | ClassNotFoundException e) {
+		} catch (SecurityException  e) {
+			throw new UnitTestingException(e);
+		} catch (ClassNotFoundException e) {
 			throw new UnitTestingException(e);
 		}
 		return this;
