@@ -7,7 +7,7 @@ public class Logger {
 	static List<String> arr = new ArrayList<String>();
 	
 	public static void log(String log){
-		StackTraceElement elem = Thread.currentThread().getStackTrace()[1];
+		StackTraceElement elem = Thread.currentThread().getStackTrace()[2];
 		arr.add(String.format("%s.%s[%s]:%s",elem.getClassName(), elem.getMethodName(), elem.getLineNumber(), log));
 	}
 	
