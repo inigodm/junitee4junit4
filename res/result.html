@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css' integrity='sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7' crossorigin='anonymous'>
+	</head>
+	<body>
+		<div ng-app="newApp" ng-controller="newCtrl">
+			<div ng-repeat="class in data">
+				<table class='table table-striped' style='background-color:green'>
+					<thead><tr><th>Class {%class.name%}</th></tr></thead>
+					<tbody>
+						<tr ng-repeat="method in class.methods.error">
+							<td style='background-color:ca6059'>
+								<div>
+									<button type='button' class='btn btn-danger' data-toggle='collapse' data-target='#demo{%method.name%}{%$index%}' ng-onclick="">err</button>{%method.name%}
+								</div>
+							</td>
+							<td style='background-color:#ca6059'>{%method.cause%}</td>
+						</tr>
+						<tr ng-repeat="method in class.methods.ok">
+							<td style='background-color:#4caf50' colspan='2' >{%method.name%}</td>
+							<td style='background-color:#4caf50'>{%method.time%}</td>
+						</tr>
+						<tr ng-repeat="method in class.methods.avoid">
+							<td style='background-color:#8181F7' colspan='2' >{%method.name%}</td>
+							<td style='background-color:#8181F7'>{%method.reason%}</td>
+						</tr>
+					</tbody> 
+				</table>
+    		</div>
+		</div>
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js'></script>
+		<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js' integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS' crossorigin='anonymous'></script>
+		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js'></script>
+	</body>
+	<script>
+	var data = {"classes": {"name": "className","methods": {"ok": {"name":"methodName", "time":2.42}, "error":{"name":"methodName", "exception":"ExceptionException"}, "avoid":{"name":"methodName", "reason":"Unavaliable"}}}};
+	var mod = angular.module('newApp', []).config(function($interpolateProvider) {
+		    $interpolateProvider.startSymbol('{%');
+		    $interpolateProvider.endSymbol('%}');
+      });
+      mod.controller("newCtrl",['$scope', '$timeout',  '$http', '$interval', function($scope, $timeout, $http, $interval){
+    	$scope.data = {"classes":{"name":"className","methods":{"ok":[{"name":"methodName1","time":2.42}],"error":[{"name":"methodName2","cause":"ExceptionException"}],"avoid":[{"name":"methodName3","reason":"Unavaliable"}]}}};
+      }]
+    );
+	</script>
+</html>
