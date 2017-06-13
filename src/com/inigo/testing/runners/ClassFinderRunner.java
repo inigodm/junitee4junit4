@@ -10,18 +10,28 @@ import com.inigo.testing.results.TestClass;
 
 public class ClassFinderRunner implements Runner{
 	ClassesFinder classFinder;
+	List<String> listToRun = null;
 	@Override
 	public List<TestClass> run(InputStream is) throws UnitTestingException {
-		classFinder = new ClassesFinder(is);
-		List<String> classNames = classFinder.find().getResults();
+		initListToRun(is);
 		List<TestClass> res = new ArrayList<TestClass>();
 		TestClass tc;
-		for (String className : classNames){
+		for (String className : listToRun){
 			tc = new TestClass();
 			tc.setName(className);
 			res.add(tc);
 		}
 		return res;
 	}
+	@Override
+	public void setListToRun(List<String> itemsToRun) {
+		this.listToRun = itemsToRun;
+	}
 
+	public void initListToRun(InputStream is) throws UnitTestingException{
+		if (listToRun == null){
+			classFinder = new ClassesFinder(is);
+			listToRun = classFinder.find().getResults();
+		}
+	}
 }

@@ -1,8 +1,11 @@
 package com.inigo.testing.results;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.inigo.testing.annotations.TemporallyUntestable;
 
 public class TestResult {
 	Method method;
@@ -14,8 +17,22 @@ public class TestResult {
 	
 	long time;
 	
-	boolean isCorrect;
+	int isCorrect;
 	
+	public TestResult(Method method2) {
+		method = method2;
+		name = method.getName();
+		result = null;
+		TemporallyUntestable ann = method2.getAnnotation(TemporallyUntestable.class);
+		if (ann != null){
+			msg = ann.reason();
+		}
+		time = 0;
+		isCorrect = 2;
+	}
+	public TestResult() {
+		// TODO Auto-generated constructor stub
+	}
 	public Method getMethod() {
 		return method;
 	}
@@ -28,10 +45,13 @@ public class TestResult {
 	public void setResult(Object result) {
 		this.result = result;
 	}
-	public boolean isOk() {
+	public boolean isCorrefct() {
+		return isCorrect == 1;
+	}
+	public int  isCorrect(){
 		return isCorrect;
 	}
-	public void setCorrect(boolean isCorrect) {
+	public void setCorrect(int isCorrect) {
 		this.isCorrect = isCorrect;
 	}
 	public String getName() {

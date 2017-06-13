@@ -19,10 +19,10 @@ public class SimpleRunner implements Runner{
 	MethodFinder methodFinder;
 	ClassesFinder classFinder;
 	BufferedReader br;
-	List<String> classNames = null;
+	List<String> listToRun = null;
 	
 	public SimpleRunner(List<String> classNames){
-		this.classNames = classNames;
+		this.listToRun = classNames;
 	}
 	
 	public SimpleRunner(){
@@ -30,16 +30,13 @@ public class SimpleRunner implements Runner{
 	}
 	
 	public List<TestClass> run(InputStream is) throws UnitTestingException{
-		classFinder = new ClassesFinder(is);
+		initListToRun(is);
 		return buildResponse();
 	}
 	
 	private List<TestClass> buildResponse() throws UnitTestingException{
-		if (classNames == null){
-			classNames = classFinder.find().getResults();
-		}
 		List<TestClass> res = new ArrayList<TestClass>();
-		for (String className : classNames){
+		for (String className : listToRun){
 			res.add(testClass(className));
 		}
 		return res;
@@ -61,6 +58,9 @@ public class SimpleRunner implements Runner{
 		for (Method method : methodFinder.find().getResults()){
 			res.add(testMethod(method));	
 		}
+		for (Method method :  methodFinder.getTemporallyUnavaliables()){
+			res.add(new TestResult(method));
+		}
 		return res;
 	}
 	
@@ -72,13 +72,13 @@ public class SimpleRunner implements Runner{
 			long time = (new Date()).getTime();
 			res.setResult(method.invoke(obj));
 			res.setTime((new Date()).getTime() - time);
-			res.setCorrect(true);
+			res.setCorrect(1);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-			res.setCorrect(false);
+			res.setCorrect(0);
 			res.setExc(e);
 		} catch (InvocationTargetException err){
-			res.setCorrect(false);
+			res.setCorrect(0);
 			String msg = err.getCause() == null ? err.getMessage() : err.getCause() .getMessage();
 			if (msg == null){
 				msg = "null";
@@ -87,10 +87,22 @@ public class SimpleRunner implements Runner{
 			res.setExc(err.getCause());
 		} catch (InstantiationException e) {
 			e.printStackTrace();
-			res.setCorrect(false);
+			res.setCorrect(0);
 			res.setExc(e);
 		}
 		res.setLogs(Logger.getLogs());
 		return res;
+	}
+
+	@Override
+	public void setListToRun(List<String> itemsToRun) {
+		this.listToRun = itemsToRun;
+	}
+	
+	public void initListToRun(InputStream is) throws UnitTestingException{
+		if (listToRun == null){
+			classFinder = new ClassesFinder(is);
+			listToRun = classFinder.find().getResults();
+		}
 	}
 }

@@ -25,7 +25,9 @@ public class TestClass {
 	
 	public boolean isOk(){
 		for (TestResult res : results){
-			if (!res.isOk()) return false;
+			if (res.isCorrect() == 0){
+				return false;
+			}
 		}
 		return true;
 	}

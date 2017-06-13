@@ -14,6 +14,7 @@ import com.inigo.testing.results.TestResult;
  *
  */
 public class HTMLFormater extends Formater{
+	private boolean testsPassed = true;
 	
 	public HTMLFormater(PrintWriter pw){
 		super(pw);
@@ -51,11 +52,23 @@ public class HTMLFormater extends Formater{
 	}
 	
 	private void printMethod(int index, TestResult tr){
-		boolean trOk=tr.isOk();
-		pw.println("<td style='background-color:" + (trOk ? "#4caf50' colspan='2" : "#ca6059") + "'>");
-		if (!trOk || !tr.getLogs().isEmpty()){
+		int trOk=tr.isCorrect();
+		testsPassed &= trOk > 0; 
+		pw.println("<td style='background-color:");
+		switch (trOk){
+		case 0:
+			pw.println("#ca6059' >");
+			break;
+		case 1:
+			pw.println("#4caf50' colspan='2' >");
+			break;
+		case 2:
+			pw.println("#8181F7'>");
+			break;
+		}
+		if (trOk == 0 || !tr.getLogs().isEmpty()){
 			pw.println("<div>");
-			if (!trOk){
+			if (trOk == 0){
 				pw.println("<button type='button' class='btn btn-danger' data-toggle='collapse' data-target='#demo" +tr.getName()+ index + "'>err</button>");
 			}
 			if (!tr.getLogs().isEmpty()){
@@ -63,12 +76,15 @@ public class HTMLFormater extends Formater{
 			}
 		}
 		pw.println(tr.getName());
-		if (!trOk){
+		if (trOk == 0){
 			pw.println("</div>");
+		}
+		else if  (trOk == 2){
+			pw.println("<td style='background-color:#8181F7'>"+tr.getMsg()+"</td>");
 		}
 		pw.println("</td>");
 		
-		if (!tr.isOk()){
+		if (trOk == 0){
 			pw.println("<td style='background-color:#ca6059'>");
 			String msg = tr.getExc().getCause() == null ? tr.getExc().getMessage() : tr.getExc().getCause() .getMessage();
 			if (msg == null){
@@ -87,7 +103,7 @@ public class HTMLFormater extends Formater{
 			pw.println("</div>");
 			pw.println("<td>");
 		}else{
-			pw.println("<td style='background-color:#4caf50'>");
+			pw.println("<td style='background-color:" + (trOk == 1? "#4caf50'>" : "#8181F7'>"));
 			pw.println(((double)(tr.getTime())) + " milisecs");
 			pw.println("</td>");
 		}
@@ -109,5 +125,13 @@ public class HTMLFormater extends Formater{
 			pw.println("</td>");
 			pw.println("</tr>");
 		}
+	}
+
+	public boolean isTestsPassed() {
+		return testsPassed;
+	}
+
+	public void setTestsPassed(boolean testsPassed) {
+		this.testsPassed = testsPassed;
 	}
 }

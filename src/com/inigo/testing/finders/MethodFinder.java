@@ -1,15 +1,18 @@
 package com.inigo.testing.finders;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.inigo.testing.annotations.TemporallyUntestable;
 import com.inigo.testing.exceptions.UnitTestingException;
 
 public class MethodFinder implements Finder<Method>{
 	
 	String classPath;
 	List<Method> methods = new ArrayList<Method>();
+	List<Method> untestables = new ArrayList<Method>();
 	Class<?> clazz;
 	
 	public MethodFinder(String classPath) throws UnitTestingException{
@@ -23,7 +26,11 @@ public class MethodFinder implements Finder<Method>{
 			//clazz = Class.forName(classPath);
 			for (Method method : clazz.getDeclaredMethods()){
 				if (method.getName().startsWith("test")){
-					methods.add(method);
+					if (isTemporallyUntestable(method.getAnnotations())){
+						untestables.add(method);
+					}else{
+						methods.add(method);
+					}
 				}
 			}
 		} catch (SecurityException  e) {
@@ -32,6 +39,18 @@ public class MethodFinder implements Finder<Method>{
 			throw new UnitTestingException(e);
 		}
 		return this;
+	}
+	
+	private boolean isTemporallyUntestable(Annotation[] anns){
+		if (anns == null){
+			return true;
+		}
+		for (int i = 0; i < anns.length; i++){
+			if (anns[i].annotationType().equals(TemporallyUntestable.class)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setClassPath(String classPath) throws UnitTestingException {
@@ -45,6 +64,10 @@ public class MethodFinder implements Finder<Method>{
 
 	public Class<?> getClazz() {
 		return clazz;
+	}
+
+	public List<Method> getTemporallyUnavaliables() {
+		return untestables;
 	}
 
 }
