@@ -41,7 +41,7 @@ public class MainServlet extends HttpServlet {
 		ServletContext context = getServletContext();
 		try {
 			Runner sr = new ClassFinderRunner();
-			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCases"));
 			MainPageFormater form = new MainPageFormater(response.getWriter());
 			form.format(res);
 		} catch (UnitTestingException e) {

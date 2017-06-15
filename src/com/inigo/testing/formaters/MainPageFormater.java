@@ -17,7 +17,8 @@ public class MainPageFormater extends Formater{
 	public void format(List<TestClass> tests) {
 		try {
 			String json = generateJSON(tests);
-			String html = getHTMLReplacingMaks("index.html", json);
+			System.out.println("Thread.currentThread().getContextClassLoader()");
+			String html = getHTMLReplacingMaks(Thread.currentThread().getContextClassLoader().getResourceAsStream("main.html"), json);
 			pw.println(html);
 		} catch (IOException e) {
 			e.printStackTrace();
