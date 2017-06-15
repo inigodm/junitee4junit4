@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js'></script>	
+<link rel='stylesheet'
+	href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'
+	integrity='sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7'
+	crossorigin='anonymous'>
+</head>
+<body>
+	<div ng-app="newApp" ng-controller="newCtrl">
+		<form action='./test' method='post'>
+		<table class='table table-striped'
+	style='background-color: cyan; margin-bottom: 0px'>
+			<tbody>
+				<tr ng-repeat="class in data">
+					<td style='background-color: #f0f0f0'>
+					<input type='checkbox' name='{%class.name%}' id='{%class.name%}' /> 
+					<label for='{%class.name%}'>{%class.name%}</label></td>
+				</tr>
+			</tbody>
+			
+		</table>
+		<input type='submit' class='btn' value='Run selected' />
+		<button onclick='javascript:window.location.href=\"./test\";'
+			class='btn'>Run all</button>
+		</form>
+		
+	</div>
+	<script
+		src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'
+		integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS'
+		crossorigin='anonymous'></script>
+</body>
+<script>
+	var mod = angular.module('newApp', []).config(function($interpolateProvider) {
+		    $interpolateProvider.startSymbol('{%');
+		    $interpolateProvider.endSymbol('%}');
+      });
+      mod.controller("newCtrl",['$scope', '$timeout',  '$http', '$interval', function($scope, $timeout, $http, $interval){
+    	$scope.data = {"classes":[{"name":"className1"},{"name":"className2"},{"name":"className3"},{"name":"className4"},{"name":"className5"}]};
+    	$scope.stateChanged = function(name){
+			alert(name);
+		}
+      }]
+    );
+	</script>
+</html>

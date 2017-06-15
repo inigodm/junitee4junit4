@@ -41,36 +41,17 @@ public class TestingServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("doget");
-		ServletContext context = getServletContext();
-		try {
-			initTestRunner();
-			Runner sr = testRunner.newInstance();
-			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
-			HTMLFormater form = new HTMLFormater(response.getWriter());
-			form.format(res);
-		} catch (UnitTestingException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("dopost");
 		ServletContext context = getServletContext();
 		//boolean erroneo = true;
 		try {
+			if (null!=request.getParameter("all")){
+				initTestRunner();
+				Runner sr = testRunner.newInstance();
+				List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+				HTMLFormater form = new HTMLFormater(response.getWriter());
+				form.format(res);
+				return;
+			}
 			initTestRunner();
 			Runner sr = new ClassFinderRunner();
 			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
@@ -95,9 +76,47 @@ public class TestingServlet extends HttpServlet {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		/*if (erroneo){
-			response.sendError(500);
-		}*/
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ServletContext context = getServletContext();
+		//boolean erroneo = true;
+		try {
+			if (null!=request.getParameter("all")){
+				initTestRunner();
+				Runner sr = testRunner.newInstance();
+				List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+				HTMLFormater form = new HTMLFormater(response.getWriter());
+				form.format(res);
+				return;
+			}
+			initTestRunner();
+			Runner sr = new ClassFinderRunner();
+			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+			List<String> execute = new ArrayList<String>();
+			for (TestClass tc : res){
+				if (null!=request.getParameter(tc.getName())){
+					execute.add(tc.getName());
+				}
+			}
+			sr = testRunner.newInstance();
+			sr.setListToRun(execute);	
+			res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+			HTMLFormater form = new HTMLFormater(response.getWriter());
+			form.format(res);
+			//erroneo = form.isTestsPassed();
+		} catch (UnitTestingException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void initTestRunner() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException{

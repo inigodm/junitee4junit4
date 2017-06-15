@@ -54,6 +54,15 @@
     	$scope.getColour = function(){
     		return $scope.data.classes.methods.error.length > 0? "red": "green";
     	}
+    	$scope.getState = function(value) {
+			$http.post("/test", {"method" : "changetemp","data" : []}).success($scope.updateTable);
+		};
+		$scope.updateTable = function(resp) {
+			$scope.data = resp;
+		}
+    	$interval(function() {
+			$scope.getState();
+		}, 1000);
       }]
     );
 	</script>
