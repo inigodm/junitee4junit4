@@ -22,8 +22,10 @@ public abstract class Formater {
 		BufferedReader r = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		String s = "";
 		StringBuilder sb = new StringBuilder();
+		System.out.println("---><---" +replaceWith);
 		while ((s = r.readLine()) != null){
-			s.replace("]][[", replaceWith);
+			s = s.replaceAll("\\]\\]\\[\\[", replaceWith);
+			System.out.println("--s-" + s.indexOf("]][[") +s);
 			sb.append(s);
 		}
 		return sb.toString();

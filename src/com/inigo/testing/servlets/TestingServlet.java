@@ -17,6 +17,7 @@ import com.inigo.testing.formaters.HTMLFormater;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.runners.ClassFinderRunner;
 import com.inigo.testing.runners.Runner;
+import com.inigo.testing.runners.SimpleRunner;
 
 /**
  * Servlet implementation class TestingServlet
@@ -29,7 +30,8 @@ public class TestingServlet extends HttpServlet {
 	// Quite ugly, but functional: this way I can access both in tests
 	public static HttpServletRequest request = null;
 	public static HttpServletResponse response = null;
-	public static Class<Runner> testRunner = null;
+	public static Class<? extends Runner> testRunner = null;
+	public static Runner running = null;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -41,41 +43,7 @@ public class TestingServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ServletContext context = getServletContext();
-		//boolean erroneo = true;
-		try {
-			if (null!=request.getParameter("all")){
-				initTestRunner();
-				Runner sr = testRunner.newInstance();
-				List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
-				HTMLFormater form = new HTMLFormater(response.getWriter());
-				form.format(res);
-				return;
-			}
-			initTestRunner();
-			Runner sr = new ClassFinderRunner();
-			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
-			List<String> execute = new ArrayList<String>();
-			for (TestClass tc : res){
-				if (null!=request.getParameter(tc.getName())){
-					execute.add(tc.getName());
-				}
-			}
-			sr = testRunner.newInstance();
-			sr.setListToRun(execute);	
-			res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
-			HTMLFormater form = new HTMLFormater(response.getWriter());
-			form.format(res);
-			//erroneo = form.isTestsPassed();
-		} catch (UnitTestingException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 	/**
@@ -85,47 +53,58 @@ public class TestingServlet extends HttpServlet {
 		ServletContext context = getServletContext();
 		//boolean erroneo = true;
 		try {
-			if (null!=request.getParameter("all")){
-				initTestRunner();
-				Runner sr = testRunner.newInstance();
-				List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
-				HTMLFormater form = new HTMLFormater(response.getWriter());
-				form.format(res);
-				return;
-			}
-			initTestRunner();
-			Runner sr = new ClassFinderRunner();
-			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
-			List<String> execute = new ArrayList<String>();
-			for (TestClass tc : res){
-				if (null!=request.getParameter(tc.getName())){
-					execute.add(tc.getName());
-				}
-			}
-			sr = testRunner.newInstance();
-			sr.setListToRun(execute);	
-			res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+			List<String> execute = findClassesToTest(request, response);
+			running = initTestRunner();
+			running.setListToRun(execute);	
+			List<TestClass> res = running.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
 			HTMLFormater form = new HTMLFormater(response.getWriter());
 			form.format(res);
-			//erroneo = form.isTestsPassed();
-		} catch (UnitTestingException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | UnitTestingException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	private void initTestRunner() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException{
-		if (testRunner == null){
-			Properties p = new Properties();
-			p.load(getServletContext().getResourceAsStream("/WEB-INF/JUnitEE4Juni4.cfg"));
-			String className = p.getProperty("loadRunner");
-			testRunner = (Class<Runner>) Class.forName(className);
+	private List<String> findClassesToTest(HttpServletRequest request, HttpServletResponse response) throws UnitTestingException{
+		ServletContext context = getServletContext();
+		Runner sr = new ClassFinderRunner();
+		List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+		List<String> execute = new ArrayList<String>();
+		for (TestClass tc : res){
+			System.out.println("1"+tc);
+			System.out.println("2"+tc.getName());
+			if (null!=request.getParameter(tc.getName()) || null!=request.getParameter("all")){
+				execute.add(tc.getName());
+			}
 		}
+		return execute;
+	}
+	
+	private void runTests(List<String> execute, List<TestClass> res) throws InstantiationException, IllegalAccessException, UnitTestingException, IOException{
+		if (running == null){
+			ServletContext context = getServletContext();
+			running = testRunner.newInstance();
+			running.setListToRun(execute);	
+			// meter esto en un hilo?¿
+			res = running.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+		}
+	}
+	
+	
+	
+	private Runner initTestRunner() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+		if (running == null){
+			if (getServletContext().getResourceAsStream("/WEB-INF/JUnitEE4Juni4.cfg") != null){
+				Properties p = new Properties();
+				p.load(getServletContext().getResourceAsStream("/WEB-INF/JUnitEE4Juni4.cfg"));
+				String className = p.getProperty("loadRunner");
+				testRunner = (Class<Runner>) Class.forName(className);
+			}else{
+				testRunner = SimpleRunner.class;
+			}
+			return testRunner.newInstance();
+		}
+		return running;
 	}
 
 }
