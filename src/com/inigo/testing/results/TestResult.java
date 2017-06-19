@@ -1,6 +1,5 @@
 package com.inigo.testing.results;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +7,9 @@ import java.util.List;
 import com.inigo.testing.annotations.TemporallyUntestable;
 
 public class TestResult {
+	public static final int OK = 1;
+	public static final int ERROR = 2;
+	public static final int OMIT = 3;
 	Method method;
 	String name;
 	Object result;
@@ -28,7 +30,7 @@ public class TestResult {
 			msg = ann.reason();
 		}
 		time = 0;
-		isCorrect = 2;
+		isCorrect = TestResult.OMIT;
 	}
 	public TestResult() {
 		// TODO Auto-generated constructor stub

@@ -2,16 +2,19 @@
 <html lang='en'>
 	<head>
 	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js'></script>
-	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js'></script>
-	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css' integrity='sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7' crossorigin='anonymous'>
-	</head>
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js'></script>	
+	<link rel='stylesheet'
+	href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'
+	integrity='sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7'
+	crossorigin='anonymous'>
+</head>
 	<body>
 		<div ng-app="newApp" ng-controller="newCtrl">
 			<div ng-repeat="class in data">
-				<table class='table table-striped' style='background-color:{%getColour()%}'>
+				<table class='table table-striped' style='background-color:{%getColour(class)%}'>
 					<thead><tr><th>Class {%class.name%}</th></tr></thead>
 					<tbody>
-						<tr ng-repeat="method in class.methods.error">
+						<tr ng-repeat="method in class.error">
 							<td colspan='3' style='background-color:#ca6059'>
 								<table style='width:100%;background-color:#ca6059'>
 									<tr style='background-color:#ca6059'>
@@ -31,11 +34,11 @@
 								</table>
 							</td>
 						</tr>
-						<tr ng-repeat="method in class.methods.ok">
+						<tr ng-repeat="method in class.ok">
 							<td colspan='2' style='width:67%;background-color:#4caf50' colspan='2' >{%method.name%}</td>
 							<td style='background-color:#4caf50'>{%method.time%}</td>
 						</tr>
-						<tr ng-repeat="method in class.methods.avoid">
+						<tr ng-repeat="method in class.ommit">
 							<td colspan='2' style='width:67%;background-color:#8181F7' colspan='2' >{%method.name%}</td>
 							<td style='background-color:#8181F7'>{%method.reason%}</td>
 						</tr>
@@ -50,19 +53,16 @@
 		    $interpolateProvider.endSymbol('%}');
       });
       mod.controller("newCtrl",['$scope', '$timeout',  '$http', '$interval', function($scope, $timeout, $http, $interval){
-    	$scope.data = {"classes":{"name":"className","methods":{"ok":[{"name":"methodName1","time":2.42}],"error":[{"name":"methodName2","cause":"ExceptionException","msg":"ExceptionException", "trace":"traszatraza\ntrazatraza"},{"name":"methodName3","cause":"ExceptionException","msg":"ExceptionException", "trace":"traszatraza\ntrazatraza"}],"avoid":[{"name":"methodName3","reason":"Unavaliable"}]}}};
-    	$scope.getColour = function(){
-    		return $scope.data.classes.methods.error.length > 0? "red": "green";
-    	}
-    	$scope.getState = function(value) {
-			$http.post("/test", {"method" : "changetemp","data" : []}).success($scope.updateTable);
-		};
-		$scope.updateTable = function(resp) {
-			$scope.data = resp;
-		}
-    	$interval(function() {
-			$scope.getState();
-		}, 1000);
+      $scope.getColour = function(clazz){
+    	  if (clazz.error == []){
+    		  return "red";
+    	  }else{
+    		  return "green";
+    	  }
+      };
+    	$scope.data = ]][[;
+    	
+    
       }]
     );
 	</script>

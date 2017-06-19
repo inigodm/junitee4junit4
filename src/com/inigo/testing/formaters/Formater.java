@@ -24,8 +24,8 @@ public abstract class Formater {
 		StringBuilder sb = new StringBuilder();
 		System.out.println("---><---" +replaceWith);
 		while ((s = r.readLine()) != null){
-			s = s.replaceAll("\\]\\]\\[\\[", replaceWith);
 			System.out.println("--s-" + s.indexOf("]][[") +s);
+			s = s.replace("]][[", replaceWith);
 			sb.append(s);
 		}
 		return sb.toString();

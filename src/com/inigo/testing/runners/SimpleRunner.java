@@ -72,13 +72,13 @@ public class SimpleRunner implements Runner{
 			long time = (new Date()).getTime();
 			res.setResult(method.invoke(obj));
 			res.setTime((new Date()).getTime() - time);
-			res.setCorrect(1);
+			res.setCorrect(TestResult.OK);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-			res.setCorrect(0);
+			res.setCorrect(TestResult.ERROR);
 			res.setExc(e);
 		} catch (InvocationTargetException err){
-			res.setCorrect(0);
+			res.setCorrect(TestResult.ERROR);
 			String msg = err.getCause() == null ? err.getMessage() : err.getCause() .getMessage();
 			if (msg == null){
 				msg = "null";
@@ -87,7 +87,7 @@ public class SimpleRunner implements Runner{
 			res.setExc(err.getCause());
 		} catch (InstantiationException e) {
 			e.printStackTrace();
-			res.setCorrect(0);
+			res.setCorrect(TestResult.ERROR);
 			res.setExc(e);
 		}
 		res.setLogs(Logger.getLogs());
