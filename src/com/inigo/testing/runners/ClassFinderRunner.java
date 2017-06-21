@@ -34,4 +34,9 @@ public class ClassFinderRunner implements Runner{
 			listToRun = classFinder.find().getResults();
 		}
 	}
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
 }

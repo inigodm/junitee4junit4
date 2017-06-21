@@ -20,6 +20,9 @@ public class SimpleRunner implements Runner{
 	ClassesFinder classFinder;
 	BufferedReader br;
 	List<String> listToRun = null;
+	List<TestClass> res;
+	
+	boolean stop = false;
 	
 	public SimpleRunner(List<String> classNames){
 		this.listToRun = classNames;
@@ -35,33 +38,34 @@ public class SimpleRunner implements Runner{
 	}
 	
 	private List<TestClass> buildResponse() throws UnitTestingException{
-		List<TestClass> res = new ArrayList<TestClass>();
+		res = new ArrayList<TestClass>();
 		for (String className : listToRun){
-			res.add(testClass(className));
+			if (stop){
+				break;
+			}
+			doClassTests(className);
 		}
 		return res;
 	}
 	
-	private TestClass testClass(String className) throws UnitTestingException{
+	private void doClassTests(String className) throws UnitTestingException{
 		System.out.println("testing " + className);
+		TestClass tc = new TestClass();
+		res.add(tc);
 		methodFinder = new MethodFinder(className);
-		TestClass res = new TestClass();
-		res.setName(className);
-		res.setResults(calcResults());
-		System.out.println(res);
-		return res;
+		tc.setName(className);
+		calcResults(tc);
+		System.out.println(tc);
 	}
 	
 	
-	private List<TestResult> calcResults() throws UnitTestingException{
-		List<TestResult> res = new ArrayList<TestResult>();
+	private void calcResults(TestClass tc) throws UnitTestingException{
 		for (Method method : methodFinder.find().getResults()){
-			res.add(testMethod(method));	
+			tc.addResult(testMethod(method));	
 		}
 		for (Method method :  methodFinder.getTemporallyUnavaliables()){
-			res.add(new TestResult(method));
+			tc.addResult(new TestResult(method));
 		}
-		return res;
 	}
 	
 	public TestResult testMethod(Method method){
@@ -104,5 +108,14 @@ public class SimpleRunner implements Runner{
 			classFinder = new ClassesFinder(is);
 			listToRun = classFinder.find().getResults();
 		}
+	}
+
+	@Override
+	public void stop() {
+		stop = true;
+	}
+	
+	public List<TestClass> getResult(){
+		return res;
 	}
 }
