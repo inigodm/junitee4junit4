@@ -37,11 +37,13 @@ public class HTMLFormater extends Formater{
 
 	private String generateJSON(List<TestClass> tests) {
 		Gson gson = new Gson();
+		/*
 		List<TestResultJson> classes = new ArrayList<>();
 		for (TestClass tc : tests){
+			System.out.println(tc);
 			classes.add(new TestResultJson(tc));
-		}
-		return gson.toJson(classes);
+		}*/
+		return gson.toJson(tests);
 	}
 }
 
@@ -52,12 +54,12 @@ class TestResultJson{
 	List<MethodResult> ommit  = new ArrayList<>();
 	
 	public TestResultJson(TestClass tc){
-		List<TestResult> trs = tc.getResults();
+	/*	List<TestResult> trs = tc.getResults();
 		name = tc.getName();
 		for (TestResult tr : trs){
 			buildMethodResultFrom(tr);
 		}
-		
+		*/
 	}
 	
 	public void buildMethodResultFrom(TestResult tr){

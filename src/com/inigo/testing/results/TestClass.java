@@ -5,7 +5,6 @@ import java.util.List;
 
 public class TestClass {
 	String name;
-	transient List<TestResult> results;
 	List<TestResult> ok  = new ArrayList<>();
 	List<TestResult> error  = new ArrayList<>();
 	List<TestResult> ommit  = new ArrayList<>();
@@ -15,12 +14,6 @@ public class TestClass {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public List<TestResult> getResults() {
-		return results;
-	}
-	public void setResults(List<TestResult> results) {
-		this.results = results;
 	}
 	public void addResult(TestResult tr){
 		switch (tr.isCorrect()){
@@ -37,16 +30,11 @@ public class TestClass {
 	}
 	@Override
 	public String toString() {
-		return "TestClass [name=" + name + ", results=\n" + results + "\n";
+		return String.format("TestClass [name=%s , ok=%s, err=%s, ommit=%s \n", name, ok, error, ommit);
 	}
 	
 	public boolean isOk(){
-		for (TestResult res : results){
-			if (res.isCorrect() == 0){
-				return false;
-			}
-		}
-		return true;
+		return error.size() == 0;
 	}
 	
 }

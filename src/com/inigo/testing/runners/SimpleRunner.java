@@ -2,6 +2,8 @@ package com.inigo.testing.runners;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import com.inigo.testing.finders.MethodFinder;
 import com.inigo.testing.logging.Logger;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
+import com.inigo.testing.utils.StringUtils;
 
 public class SimpleRunner implements Runner{
 	MethodFinder methodFinder;
@@ -51,16 +54,18 @@ public class SimpleRunner implements Runner{
 	private void doClassTests(String className) throws UnitTestingException{
 		System.out.println("testing " + className);
 		TestClass tc = new TestClass();
-		res.add(tc);
-		methodFinder = new MethodFinder(className);
 		tc.setName(className);
+		methodFinder = new MethodFinder(className);
+		res.add(tc);
 		calcResults(tc);
 		System.out.println(tc);
 	}
 	
 	
 	private void calcResults(TestClass tc) throws UnitTestingException{
+		System.out.println("Entrando en calcResults");
 		for (Method method : methodFinder.find().getResults()){
+			System.out.println("Anadiendo method");
 			tc.addResult(testMethod(method));	
 		}
 		for (Method method :  methodFinder.getTemporallyUnavaliables()){
@@ -71,6 +76,7 @@ public class SimpleRunner implements Runner{
 	public TestResult testMethod(Method method){
 		TestResult res = new TestResult();
 		res.setName(method.getName());
+		System.out.println("Testando " + method.getName());
 		try {
 			Object obj = methodFinder.getClazz().newInstance();
 			long time = (new Date()).getTime();
@@ -89,12 +95,14 @@ public class SimpleRunner implements Runner{
 			}
 			res.setMsg("Error!!!!! " + msg.replaceAll("<","(").replaceAll(">",")"));
 			res.setExc(err.getCause());
+			res.setTrace(StringUtils.exceptionToString(err));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			res.setCorrect(TestResult.ERROR);
 			res.setExc(e);
 		}
 		res.setLogs(Logger.getLogs());
+		System.out.println("Testador " + res);
 		return res;
 	}
 

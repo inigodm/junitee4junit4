@@ -14,6 +14,7 @@ public class TestResult {
 	String name;
 	Object result;
 	String msg;
+	String trace;
 	Throwable exc;
 	List<String> logs = new ArrayList<String>();
 	
@@ -86,6 +87,12 @@ public class TestResult {
 	}
 	public void setLogs(List<String> logs) {
 		this.logs = logs;
+	}
+	public String getTrace() {
+		return trace;
+	}
+	public void setTrace(String trace) {
+		this.trace = trace;
 	}
 	@Override
 	public String toString() {
