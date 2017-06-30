@@ -42,7 +42,9 @@ public class SimpleRunner implements Runner{
 	
 	private List<TestClass> buildResponse() throws UnitTestingException{
 		res = new ArrayList<TestClass>();
+		System.out.println("list " + listToRun);
 		for (String className : listToRun){
+			System.out.println("class" + className);
 			if (stop){
 				break;
 			}

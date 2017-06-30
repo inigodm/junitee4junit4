@@ -40,15 +40,17 @@ public class TestingServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		boolean retrievingData = request.getParameter("retrieveData") != null;
 		HttpSession session = request.getSession(true);
-		if (retrievingData){
-			
+		SimpleRunner nowRunning = (SimpleRunner) session.getAttribute("retrieveData");
+		if (nowRunning != null){
+			HTMLFormater form = new HTMLFormater(response.getWriter());
+			form.format(nowRunning.getResult());
 		}else{
 			String className = request.getParameter("class");
 			if (className != null){
 				executeTestForPetition(request, response);		    
 			}
+			session.setAttribute("retrieveData", true);
 		}
 	}
 
@@ -62,11 +64,14 @@ public class TestingServlet extends HttpServlet {
 	private void executeTestForPetition(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		Runner running = null;
 	    ServletContext context = getServletContext();
+	    HttpSession session = request.getSession(true);
 		//boolean erroneo = true;
 		try {
-			List<String> execute = findClassesToTest(request, response);
 			running = initTestRunner();
+			session.setAttribute("retrieveData", running);
+			List<String> execute = findClassesToTest(request, response);
 			running.setListToRun(execute);	
+			System.out.println("execute " + execute + " in " +running);
 			List<TestClass> res = running.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
 			HTMLFormater form = new HTMLFormater(response.getWriter());
 			form.format(res);
@@ -80,15 +85,17 @@ public class TestingServlet extends HttpServlet {
 		ServletContext context = getServletContext();
 		Runner sr = new ClassFinderRunner();
 		List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
+		System.out.println("Classes to run " +res);
 		return findClassesToTest(res,request, response);
 	}
 	
 	private List<String> findClassesToTest(List<TestClass> res, HttpServletRequest request, HttpServletResponse response){
 		List<String> execute = new ArrayList<String>();
 		for (TestClass tc : res){
-			System.out.println("1"+tc);
+			System.out.println("1"+request.getParameter("all"));
 			System.out.println("2"+tc.getName());
-			if (null!=request.getParameter(tc.getName()) || null!=request.getParameter("all")){
+			//TODO fix this
+			if (null!=request.getParameter(tc.getName()) || null==request.getParameter("all")){
 				execute.add(tc.getName());
 			}
 		}

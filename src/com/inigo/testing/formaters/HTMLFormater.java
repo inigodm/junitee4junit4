@@ -27,6 +27,7 @@ public class HTMLFormater extends Formater{
 	}
 	public void format(List<TestClass> tests) {
 		try {
+			System.out.println("Tests: " + tests);
 			String json = generateJSON(tests);
 			String html = getHTMLReplacingMaks(Thread.currentThread().getContextClassLoader().getResourceAsStream("result.html"), json);
 			pw.println(html);
