@@ -9,5 +9,5 @@ import com.inigo.testing.results.TestClass;
 public interface Runner {
 	public void setListToRun(List<String> itemsToRun);
 	public List<TestClass> run(InputStream is) throws UnitTestingException;
-	public void stop();
+	public void setMode(String mode);
 }

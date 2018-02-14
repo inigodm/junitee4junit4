@@ -34,8 +34,16 @@ public class ClassesFinder implements Finder<String> {
 	}
 
 	@Override
-	public List<String> getResults() {
+	public List<String> getBasicTests() {
 		return res;
 	}
+
+	@Override
+	public List<String> getExtendedTests() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }

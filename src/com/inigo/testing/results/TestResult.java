@@ -7,40 +7,41 @@ import java.util.List;
 import com.inigo.testing.annotations.TemporallyUntestable;
 
 public class TestResult {
-	public static final int OK = 1;
-	public static final int ERROR = 2;
-	public static final int OMIT = 3;
-	Method method;
+	public static final int CORRECT = 1;
+	public static final int INCORRECT = 2;
+	public static final int UNAVAILABLE = 3;
 	String name;
 	Object result;
 	String msg;
-	String trace;
-	Throwable exc;
+	volatile Throwable exc;
+	String exception;
 	List<String> logs = new ArrayList<String>();
 	
 	long time;
 	
-	int isCorrect;
+	int isCorrect = 2;
 	
 	public TestResult(Method method2) {
-		method = method2;
-		name = method.getName();
+		//method = method2;
+		name = method2.getName();
 		result = null;
 		TemporallyUntestable ann = method2.getAnnotation(TemporallyUntestable.class);
 		if (ann != null){
 			msg = ann.reason();
 		}
 		time = 0;
-		isCorrect = TestResult.OMIT;
+		isCorrect = 2;
+	}
+	
+	public TestResult(String name, String reason) {
+		this.name = name;
+		result = null;
+		msg = reason;
+		time = 0;
+		isCorrect = 2;
 	}
 	public TestResult() {
 		// TODO Auto-generated constructor stub
-	}
-	public Method getMethod() {
-		return method;
-	}
-	public void setMethod(Method method) {
-		this.method = method;
 	}
 	public Object getResult() {
 		return result;
@@ -74,6 +75,11 @@ public class TestResult {
 	}
 	public void setExc(Throwable exc) {
 		this.exc = exc;
+		StringBuilder sb = new StringBuilder();
+		for (StackTraceElement s : exc.getStackTrace()){
+			sb.append(String.format("%s.%s (%s);<br>", s.getClassName(), s.getMethodName(), s.getLineNumber()));
+		}
+		exception = sb.toString();
 	}
 	public long getTime() {
 		return time;
@@ -88,16 +94,12 @@ public class TestResult {
 	public void setLogs(List<String> logs) {
 		this.logs = logs;
 	}
-	public String getTrace() {
-		return trace;
+	public String getException() {
+		return exception;
 	}
-	public void setTrace(String trace) {
-		this.trace = trace;
-	}
-	@Override
-	public String toString() {
-		return "TestResult [method=" + method + ", name=" + name + ", result=" + result + ", msg=" + msg + ", exc="
-				+ exc + ", isCorrect=" + isCorrect + "]\n";
+
+	public void setException(String exception) {
+		this.exception = exception;
 	}
 	
 }

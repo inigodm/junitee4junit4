@@ -1,13 +1,11 @@
 package com.inigo.testing.results;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestClass {
 	String name;
-	List<TestResult> ok  = new ArrayList<>();
-	List<TestResult> error  = new ArrayList<>();
-	List<TestResult> ommit  = new ArrayList<>();
+	boolean testFinished = false;
+	List<TestResult> results;
 	
 	public String getName() {
 		return name;
@@ -15,26 +13,30 @@ public class TestClass {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public void addResult(TestResult tr){
-		switch (tr.isCorrect()){
-			case TestResult.OK:
-				ok.add(tr);
-				break;
-			case TestResult.ERROR:
-				error.add(tr);
-				break;
-			case TestResult.OMIT:
-				ommit.add(tr);
-		}
-		
+	public List<TestResult> getResults() {
+		return results;
 	}
-	@Override
+	public void setResults(List<TestResult> results) {
+		this.results = results;
+	}
+	/*@Override
 	public String toString() {
-		return String.format("TestClass [name=%s , ok=%s, err=%s, ommit=%s \n", name, ok, error, ommit);
-	}
+		return "TestClass [name=" + name + ", results=\n" + results + "\n";
+	}*/
 	
 	public boolean isOk(){
-		return error.size() == 0;
+		for (TestResult res : results){
+			if (res.isCorrect() == 0){
+				return false;
+			}
+		}
+		return true;
+	}
+	public boolean isTestFinished() {
+		return testFinished;
+	}
+	public void setTestFinished(boolean testFinished) {
+		this.testFinished = testFinished;
 	}
 	
 }

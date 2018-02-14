@@ -11,4 +11,8 @@ public class UnitTestingException extends Exception {
 		super(e);
 	}
 
+	public UnitTestingException(String string) {
+	   super(string);
+	}
+
 }

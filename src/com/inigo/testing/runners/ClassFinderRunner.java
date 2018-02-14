@@ -11,6 +11,8 @@ import com.inigo.testing.results.TestClass;
 public class ClassFinderRunner implements Runner{
 	ClassesFinder classFinder;
 	List<String> listToRun = null;
+	String mode = "basico";
+	
 	@Override
 	public List<TestClass> run(InputStream is) throws UnitTestingException {
 		initListToRun(is);
@@ -31,12 +33,11 @@ public class ClassFinderRunner implements Runner{
 	public void initListToRun(InputStream is) throws UnitTestingException{
 		if (listToRun == null){
 			classFinder = new ClassesFinder(is);
-			listToRun = classFinder.find().getResults();
+			listToRun = classFinder.find().getBasicTests();
 		}
 	}
 	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-		
+	public void setMode(String mode) {
+		this.mode = mode;		
 	}
 }

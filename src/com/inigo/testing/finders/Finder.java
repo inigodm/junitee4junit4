@@ -6,5 +6,6 @@ import com.inigo.testing.exceptions.UnitTestingException;
 
 public interface Finder<T> {
 	public Finder<T> find() throws UnitTestingException;
-	public List<T> getResults();
+	public List<T> getExtendedTests();
+	public List<T> getBasicTests();
 }
