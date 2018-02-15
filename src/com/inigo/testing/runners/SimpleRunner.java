@@ -11,7 +11,6 @@ import java.util.List;
 import com.inigo.testing.exceptions.UnitTestingException;
 import com.inigo.testing.finders.ClassesFinder;
 import com.inigo.testing.finders.MethodFinder;
-import com.inigo.testing.logging.Logger;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
 
