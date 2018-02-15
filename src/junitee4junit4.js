@@ -24,10 +24,10 @@ function loadDoc() {
 		    	table = createTable(json.res[i].name);
 			}
 		    for (j = 0; j < json.res[i].results.length; j++){
-				if (json.res[i].results[j].isCorrect == 2){
-					drawOK(table.getElementsByTagName('tbody')[0], json.res[i].results[j], "8181F7");
+				if (!json.res[i].results[j].isAvaliable){
+					drawUnavaliable(table.getElementsByTagName('tbody')[0], json.res[i].results[j], "8181F7");
 				}
-				else if (json.res[i].results[j].isCorrect == 1){
+				else if (json.res[i].results[j].isCorrect){
 					drawOK(table.getElementsByTagName('tbody')[0], json.res[i].results[j], "4caf50");
 				}
 				else{
@@ -77,16 +77,34 @@ function drawOK(table, result, color){
 var index = 0;
 
 function drawError(table, result, color){
+	drawAccordion(table, 
+			result, 
+			color, 
+			result.msg.replace(new RegExp("<", 'g'), "(").replace(new RegExp(">", 'g'), ")"),
+			"danger", 
+			'err')
+}
+
+function drawUnavaliable(table, result, color){
+	drawAccordion(table, 
+			result, 
+			color, 
+			result.reason,
+			"info", 
+			'info')
+}
+
+function drawAccordion(table, result, color, firstText, infoOrDanger, btnLabel){
 	var row = table.insertRow(-1);
 	var div = document.createElement('div');
 	var span = document.createElement('span');
 	span.innerHTML = result.name;
 	var btn = document.createElement('button');
-	btn.setAttribute("class", 'btn btn-danger');
+	btn.setAttribute("class", 'btn btn-' + infoOrDanger);
 	btn.setAttribute("type", 'button');
 	btn.setAttribute("data-toggle", 'collapse');
 	btn.setAttribute("data-target", '#demo' + result.name + index);
-	btn.innerHTML = "err";
+	btn.innerHTML = btnLabel;
 	var cell1 = row.insertCell(0); 
     cell1.appendChild(div);
     cell1.appendChild(span);
@@ -96,7 +114,7 @@ function drawError(table, result, color){
     cell1.setAttribute("style", "background-color:#" + color);//ca6059
     cell2.setAttribute("style", "background-color:#" + color);
     cell3.setAttribute("style", "background-color:#" + color);
-    cell2.innerHTML = result.msg.replace(new RegExp("<", 'g'), "(").replace(new RegExp(">", 'g'), ")");
+    cell2.innerHTML = firstText;
     cell3.innerHTML = result.msg;
     row = table.insertRow(-1);
     row.setAttribute("style", "background-color:#" + color);

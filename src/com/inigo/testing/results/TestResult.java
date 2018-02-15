@@ -7,55 +7,37 @@ import java.util.List;
 import com.inigo.testing.annotations.TemporallyUntestable;
 
 public class TestResult {
-	public static final int CORRECT = 1;
-	public static final int INCORRECT = 2;
-	public static final int UNAVAILABLE = 3;
+	public static final boolean INCORRECT = false;
+	public static final boolean CORRECT = true;
 	String name;
-	Object result;
+	Object returned = null;
 	String msg;
+	boolean isAvaliable = true;
 	volatile Throwable exc;
 	String exception;
-	List<String> logs = new ArrayList<String>();
-	
+	String reason = null;
 	long time;
-	
-	int isCorrect = 2;
+	boolean isCorrect = true;
 	
 	public TestResult(Method method2) {
-		//method = method2;
 		name = method2.getName();
-		result = null;
 		TemporallyUntestable ann = method2.getAnnotation(TemporallyUntestable.class);
 		if (ann != null){
-			msg = ann.reason();
+			reason = ann.reason();
 		}
 		time = 0;
-		isCorrect = 2;
 	}
-	
-	public TestResult(String name, String reason) {
-		this.name = name;
-		result = null;
-		msg = reason;
-		time = 0;
-		isCorrect = 2;
+
+	public Object getReturned() {
+		return returned;
 	}
-	public TestResult() {
-		// TODO Auto-generated constructor stub
+	public void setReturned(Object result) {
+		this.returned = result;
 	}
-	public Object getResult() {
-		return result;
-	}
-	public void setResult(Object result) {
-		this.result = result;
-	}
-	public boolean isCorrefct() {
-		return isCorrect == 1;
-	}
-	public int  isCorrect(){
+	public boolean isCorrect(){
 		return isCorrect;
 	}
-	public void setCorrect(int isCorrect) {
+	public void setCorrect(boolean isCorrect) {
 		this.isCorrect = isCorrect;
 	}
 	public String getName() {
@@ -84,22 +66,35 @@ public class TestResult {
 	public long getTime() {
 		return time;
 	}
+	
 	public void setTime(long time) {
 		System.out.println("time is " + time);
 		this.time = time;
 	}
-	public List<String> getLogs() {
-		return logs;
-	}
-	public void setLogs(List<String> logs) {
-		this.logs = logs;
-	}
+
 	public String getException() {
 		return exception;
 	}
 
 	public void setException(String exception) {
 		this.exception = exception;
+	}
+
+	public boolean isAvaliable() {
+		return isAvaliable;
+	}
+
+	public TestResult setAvaliable(boolean isAvaliable) {
+		this.isAvaliable = isAvaliable;
+		return this;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	
 }

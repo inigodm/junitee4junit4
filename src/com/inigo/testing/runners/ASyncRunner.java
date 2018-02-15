@@ -15,7 +15,6 @@ public class ASyncRunner  implements Runner{
 	int i = 0;
 	boolean running;
 	ClassesFinder classFinder;
-	List<TestClass> resAux = new ArrayList<TestClass>();
 	private List<String>  listToRun;
 	
 	public ASyncRunner(){
@@ -79,24 +78,11 @@ public class ASyncRunner  implements Runner{
 		
 	}
 	
-	@Deprecated
-	private TestClass generateDummie(int index){
-		TestClass tc = new TestClass();
-		tc.setName("testClass"+index);
-		TestResult tr = new TestResult("testMethod"+index, null);
-		tr.setCorrect(TestResult.CORRECT);
-		tr.setTime(21);
-		tc.setResults(new ArrayList<TestResult>());
-		tc.getResults().add(tr);
-		return tc;
-	}
-	
 	public List<TestClass> getResults(){
 		List<TestClass> res2 = new ArrayList<TestClass>();
 		synchronized (res) {
 			for (TestClass tc : res){
 				res2.add(tc);
-				resAux.add(tc);
 			}
 			res.clear();
 		}

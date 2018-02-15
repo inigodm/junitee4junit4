@@ -16,9 +16,9 @@ import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
 
 public class SimpleRunner implements Runner{
-	BufferedReader br;
-	List<String> listToRun = null;
-	String mode = "basico";
+	protected BufferedReader br;
+	protected List<String> listToRun = null;
+	protected String mode = "basico";
 	
 	public SimpleRunner(List<String> classNames){
 		this.listToRun = classNames;
@@ -33,7 +33,7 @@ public class SimpleRunner implements Runner{
 		return buildResponse();
 	}
 	
-	private List<TestClass> buildResponse() throws UnitTestingException{
+	protected List<TestClass> buildResponse() throws UnitTestingException{
 		List<TestClass> res = new ArrayList<TestClass>();
 		for (String className : listToRun){
 			res.add(testClass(className, mode));
@@ -51,14 +51,15 @@ public class SimpleRunner implements Runner{
 		return res;
 	}
 	
-	private static List<TestResult> calcResults(MethodFinder methodFinder, String mode) throws UnitTestingException{
+	public static List<TestResult> calcResults(MethodFinder methodFinder, String mode) throws UnitTestingException{
 		List<TestResult> res = new ArrayList<TestResult>();
 		methodFinder.find();
 		for (Method method :  methodFinder.getTestsForMode(mode)){
 			res.add(testMethod(method, methodFinder.getClazz()));
 		}
 		for (Method method :  methodFinder.getTemporallyUnavaliables()){
-			TestResult tr = new TestResult(method);
+			TestResult tr = testMethod(method, methodFinder.getClazz()).setAvaliable(false);
+			tr.setAvaliable(false);
 			res.add(tr);
 		}
 		return res;
@@ -72,21 +73,20 @@ public class SimpleRunner implements Runner{
 		return methods;
 	}
 	
-	public static TestResult testMethod(Method method, Class clazz){
-		TestResult res = new TestResult();
-		res.setName(method.getName());
+	private static TestResult testMethod(Method method, Class clazz){
+		TestResult res = new TestResult(method);
 		try {
 			Object obj = clazz.newInstance();
 			long time = (new Date()).getTime();
-			res.setResult(method.invoke(obj));
+			res.setReturned(method.invoke(obj));
 			res.setTime((new Date()).getTime() - time);
-			res.setCorrect(1);
+			res.setCorrect(TestResult.CORRECT);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-			res.setCorrect(0);
+			res.setCorrect(TestResult.INCORRECT);
 			res.setExc(e);
 		} catch (InvocationTargetException err){
-			res.setCorrect(0);
+			res.setCorrect(TestResult.INCORRECT);
 			String msg = err.getCause() == null ? err.getMessage() : err.getCause() .getMessage();
 			if (msg == null){
 				msg = "null";
@@ -95,10 +95,10 @@ public class SimpleRunner implements Runner{
 			res.setExc(err.getCause());
 		} catch (InstantiationException e) {
 			e.printStackTrace();
-			res.setCorrect(0);
+			res.setCorrect(TestResult.INCORRECT);
 			res.setExc(e);
 		}
-		res.setLogs(Logger.getLogs());
+		//res.setLogs(Logger.getLogs());
 		return res;
 	}
 

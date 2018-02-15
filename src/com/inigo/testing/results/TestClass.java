@@ -18,15 +18,10 @@ public class TestClass {
 	}
 	public void setResults(List<TestResult> results) {
 		this.results = results;
-	}
-	/*@Override
-	public String toString() {
-		return "TestClass [name=" + name + ", results=\n" + results + "\n";
-	}*/
-	
+	}	
 	public boolean isOk(){
 		for (TestResult res : results){
-			if (res.isCorrect() == 0){
+			if (res.isAvaliable() && !res.isCorrect()){
 				return false;
 			}
 		}

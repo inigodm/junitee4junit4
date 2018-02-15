@@ -29,7 +29,7 @@ public class HTMLFormater extends Formater{
 		pw.println("<body>");
 		pw.println("<div>");
 		for (TestClass tc : tests){
-			printClasses(tc);
+			printClass(tc);
 		}
 		pw.println("</div>");
 		pw.println("<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js'></script>");
@@ -38,7 +38,7 @@ public class HTMLFormater extends Formater{
 		pw.println("</html>");
 	}
 	
-	protected void printClasses(TestClass tc) {
+	protected void printClass(TestClass tc) {
 		pw.println("<table id=\"" + tc.getName() + "\" class='table table-striped' style='background-color:" + (tc.isOk() ? "green" : "red") + "'>");
 		pw.println("<thead><tr><th>Class " + tc.getName() + "<th></tr></thead>");
 		pw.println("</thead>");
@@ -52,78 +52,18 @@ public class HTMLFormater extends Formater{
 	}
 	
 	private void printMethod(int index, TestResult tr){
-		int trOk=tr.isCorrect();
-		testsPassed &= trOk > 0; 
-		pw.println("<td style='background-color:");
-		switch (trOk){
-		case 0:
-			pw.println("#ca6059' >");
-			break;
-		case 1:
-			pw.println("#4caf50' colspan='2' >");
-			break;
-		case 2:
-			pw.println("#8181F7'>");
-			break;
-		}
-		if (trOk == 0 || !tr.getLogs().isEmpty()){
-			pw.println("<div>");
-			if (trOk == 0){
-				pw.println("<button type='button' class='btn btn-danger' data-toggle='collapse' data-target='#demo" +tr.getName()+ index + "'>err</button>");
-			}
-			if (!tr.getLogs().isEmpty()){
-				pw.println("<button type='button' class='btn btn-info' data-toggle='collapse' data-target='#info" +tr.getName()+ index + "'>inf</button>");
-			}
-		}
-		pw.println(tr.getName());
-		if (trOk == 0){
-			pw.println("</div>");
-		}
-		else if  (trOk == 2){
-			pw.println("<td style='background-color:#8181F7'>"+tr.getMsg()+"</td>");
-		}
-		pw.println("</td>");
-		
-		if (trOk == 0){
-			pw.println("<td style='background-color:#ca6059'>");
-			String msg = tr.getExc().getCause() == null ? tr.getExc().getMessage() : tr.getExc().getCause() .getMessage();
-			if (msg == null){
-				msg = "null";
-			}
-			pw.println(msg.replaceAll("<","(").replaceAll(">",")"));
-			pw.println("</td>");
-			pw.println("<td style='background-color:#ca6059'>");
-			pw.println(tr.getMsg());
-			pw.println("</td>");
-			pw.println("</tr><tr style='background-color:#ca6059'><td colspan='2'>");
-			pw.println("<div id='demo" +tr.getName()+ index +"' class='collapse'>");
-			for (StackTraceElement s : tr.getExc().getStackTrace()){
-				pw.println(String.format("%s.%s (%s);<br>", s.getClassName(), s.getMethodName(), s.getLineNumber()));
-			}
-			pw.println("</div>");
-			pw.println("<td>");
-		}else{
-			pw.println("<td style='background-color:" + (trOk == 1? "#4caf50'>" : "#8181F7'>"));
-			pw.println(((double)(tr.getTime())) + " milisecs");
-			pw.println("</td>");
-		}
-		printLog(index, tr);
-		pw.println("</tr>");
-		
-			
+		LogDrawer ld = logDrawerFactory(index, tr);
+		ld.drawResult(tr);
 	}
 	
-	public void printLog(int index, TestResult tr){
-		if (!tr.getLogs().isEmpty()){
-			pw.println("<tr>");
-			pw.println("<td style='background-color:#cccccc' colspan='3'>");
-			pw.println("<div id='info" +tr.getName()+ index +"' class='collapse' style='background-color:#cccccc'>");
-			for (String log : tr.getLogs()){
-				pw.println(String.format("%s<br>", log));
-			}
-			pw.println("</div>");
-			pw.println("</td>");
-			pw.println("</tr>");
+	private LogDrawer logDrawerFactory(int index, TestResult tr){
+		if (!tr.isAvaliable()){
+			return new UnAvailableDrawer(pw, index);
+		}else if (tr.isCorrect()){
+			return new OkDrawer(pw, index);
+		}
+		else{
+			return new ErrorDrawer(pw, index);
 		}
 	}
 
@@ -134,4 +74,150 @@ public class HTMLFormater extends Formater{
 	public void setTestsPassed(boolean testsPassed) {
 		this.testsPassed = testsPassed;
 	}
+}
+
+abstract class LogDrawer{
+	PrintWriter pw;
+    int index;//TODO: I think that index is not needed, check it.
+    protected abstract void drawFirstCell(TestResult tr);
+    protected abstract void drawSecondCell(TestResult tr);
+    protected abstract void drawAccordion(TestResult tr);
+    
+    public LogDrawer(PrintWriter pw, int index){
+    	this.pw = pw;
+    	this.index = index;
+    }
+    
+    public void drawResult(TestResult tr){
+    	pw.println("<tr>");
+    	drawFirstCell(tr);
+    	drawSecondCell(tr);
+    	pw.println("</tr>");
+    	drawAccordion(tr);
+    }
+}
+
+class UnAvailableDrawer extends LogDrawer{
+    
+    public UnAvailableDrawer(PrintWriter pw, int index){
+    	super(pw, index);
+    }
+
+	@Override
+	protected void drawFirstCell(TestResult tr) {
+		pw.println("<td style='background-color:#8181F7'>");
+		if (tr.getExc() == null || tr.getExc().getStackTrace().length == 0){//TODO: this must dissapear and let only the 'else' case
+			pw.println(tr.getName());
+		}else{
+			drawButton(tr);
+		}
+    	pw.println("</td>");
+	}
+
+	@Override
+	protected void drawSecondCell(TestResult tr) {
+		pw.println("<td style='background-color:#8181F7'>");
+		pw.println("<div>" + tr.getReason() + "</div");
+		pw.println("</td>");
+		pw.println("<td style='background-color:#8181F7'>");
+		pw.println(tr.getMsg());
+		pw.println("</td>");
+	}
+	
+	protected void drawButton(TestResult tr) {
+    	pw.println("<div>");
+    	pw.println("<button type='button' class='btn btn-info' data-toggle='collapse' data-target='#demo" +tr.getName()+ index + "'>info</button>");
+    	pw.println(tr.getName());
+		pw.println("</div>");
+	}
+
+	@Override
+	protected void drawAccordion(TestResult tr) {
+		if (tr.getExc() != null && tr.getExc().getStackTrace().length != 0){//TODO: erase this if, must be the only case
+			pw.println("<tr style='background-color:#8181F7'><td colspan='2'>");
+			pw.println("<div id='demo" +tr.getName()+ index +"' class='collapse'>");
+			for (StackTraceElement s : tr.getExc().getStackTrace()){
+				pw.println(String.format("%s.%s (%s);<br>", s.getClassName(), s.getMethodName(), s.getLineNumber()));
+			}
+			pw.println("</div>");
+			pw.println("<td>");
+			pw.println("</tr>");		
+		}
+	}
+	
+}
+
+
+class OkDrawer extends LogDrawer{
+    
+    public OkDrawer(PrintWriter pw, int index){
+    	super(pw, index);
+    }
+
+	@Override
+	protected void drawFirstCell(TestResult tr) {
+		pw.println("<td style='background-color:#4caf50' colspan='2' >");
+		pw.println(tr.getName());
+    	pw.println("</td>");
+	}
+
+	@Override
+	protected void drawSecondCell(TestResult tr) {
+		pw.println("<td style='background-color:#4caf50'>");
+		pw.println(((double)(tr.getTime())) + " milisecs");
+		pw.println("</td>");
+	}
+
+	@Override
+	protected void drawAccordion(TestResult tr) {
+		// No accordion because no logs to draw already
+	}
+}
+
+class ErrorDrawer extends LogDrawer{
+    
+    public ErrorDrawer(PrintWriter pw, int index){
+    	super(pw, index);
+    }
+    
+    @Override
+    protected void drawFirstCell(TestResult tr) {
+    	pw.println("<td style='background-color:#ca6059' >");
+    	drawButton(tr);
+    	pw.println("</td>");
+    }
+
+    protected void drawButton(TestResult tr) {
+    	pw.println("<div>");
+    	pw.println("<button type='button' class='btn btn-danger' data-toggle='collapse' data-target='#demo" +tr.getName()+ index + "'>err</button>");
+    	pw.println(tr.getName());
+		pw.println("</div>");
+	}
+
+    @Override
+    protected void drawSecondCell(TestResult tr) {
+    	pw.println("<td style='background-color:#ca6059'>");
+		String msg = tr.getExc().getCause() == null ? tr.getExc().getMessage() : tr.getExc().getCause() .getMessage();
+		if (msg == null){
+			msg = "null";
+		}
+		pw.println(msg.replaceAll("<","(").replaceAll(">",")"));
+		pw.println("</td>");
+		pw.println("<td style='background-color:#ca6059'>");
+		pw.println(tr.getMsg());
+		pw.println("</td>");
+    }
+
+    @Override
+    protected void drawAccordion(TestResult tr) {
+    	pw.println("<tr style='background-color:#ca6059'><td colspan='2'>");
+		pw.println("<div id='demo" +tr.getName()+ index +"' class='collapse'>");
+		for (StackTraceElement s : tr.getExc().getStackTrace()){
+			pw.println(String.format("%s.%s (%s);<br>", s.getClassName(), s.getMethodName(), s.getLineNumber()));
+		}
+		pw.println("</div>");
+		pw.println("<td>");
+		pw.println("</tr>");
+    }
+    
 }
