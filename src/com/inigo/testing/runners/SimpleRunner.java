@@ -14,100 +14,98 @@ import com.inigo.testing.finders.MethodFinder;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
 
-public class SimpleRunner implements Runner{
+public class SimpleRunner implements Runner {
 	protected BufferedReader br;
 	protected List<String> listToRun = null;
 	protected String mode = "basico";
-	
-	public SimpleRunner(List<String> classNames){
+	protected TestClass currentClass;
+	protected TestResult currentMethod;
+
+	public SimpleRunner(List<String> classNames) {
 		this.listToRun = classNames;
 	}
-	
-	public SimpleRunner(){
-		
+
+	public SimpleRunner() {
+
 	}
-	
-	public List<TestClass> run(InputStream is) throws UnitTestingException{
+
+	public List<TestClass> run(InputStream is) throws UnitTestingException {
 		initListToRun(is);
 		return buildResponse();
 	}
-	
-	protected List<TestClass> buildResponse() throws UnitTestingException{
+
+	protected List<TestClass> buildResponse() throws UnitTestingException {
 		List<TestClass> res = new ArrayList<TestClass>();
-		for (String className : listToRun){
-			res.add(testClass(className, mode));
+		for (String className : listToRun) {
+			currentClass = new TestClass();
+			res.add(currentClass);
+			testClass(className, mode);
 		}
 		return res;
 	}
-	
-	public static TestClass testClass(String className, String mode) throws UnitTestingException{
+
+	public void testClass(String className, String mode) throws UnitTestingException {
 		System.out.println("testing " + className);
 		MethodFinder methodFinder = new MethodFinder(className);
-		TestClass res = new TestClass();
-		res.setName(className);
-		res.setResults(calcResults(methodFinder, mode));
-		System.out.println(res);
-		return res;
+		currentClass.setName(className);
+		currentClass.setResults(calcResults(methodFinder, mode));
+		currentClass.setTestFinished(true);
+		System.out.println(currentClass);
 	}
-	
-	public static List<TestResult> calcResults(MethodFinder methodFinder, String mode) throws UnitTestingException{
-		List<TestResult> res = new ArrayList<TestResult>();
+
+	public List<TestResult> calcResults(MethodFinder methodFinder, String mode) throws UnitTestingException {
+		List<TestResult> res = currentClass.getResults();
 		methodFinder.find();
-		for (Method method :  methodFinder.getTestsForMode(mode)){
-			res.add(testMethod(method, methodFinder.getClazz()));
+		for (Method method : methodFinder.getTestsForMode(mode)) {
+			currentMethod = new TestResult(method);
+			res.add(currentMethod);
+			testMethod(method, methodFinder.getClazz());
 		}
-		for (Method method :  methodFinder.getTemporallyUnavaliables()){
-			TestResult tr = testMethod(method, methodFinder.getClazz()).setAvaliable(false);
-			tr.setAvaliable(false);
-			res.add(tr);
+		for (Method method : methodFinder.getTemporallyUnavaliables()) {
+			currentMethod = new TestResult(method);
+			res.add(currentMethod);
+			testMethod(method, methodFinder.getClazz()).setAvaliable(false);
+			currentMethod.setAvaliable(false);
 		}
 		return res;
 	}
-	
-	private List<Method> getMethodsToTest(MethodFinder methodFinder) throws UnitTestingException{
-		List<Method> methods = methodFinder.getBasicTests();
-		if ("extendido".equals(mode)){
-			methods = methodFinder.getExtendedTests();
-		}
-		return methods;
-	}
-	
-	private static TestResult testMethod(Method method, Class clazz){
-		TestResult res = new TestResult(method);
+
+	private TestResult testMethod(Method method, Class clazz) {
 		try {
 			Object obj = clazz.newInstance();
 			long time = (new Date()).getTime();
-			res.setReturned(method.invoke(obj));
-			res.setTime((new Date()).getTime() - time);
-			res.setCorrect(TestResult.CORRECT);
+			currentMethod.setReturned(method.invoke(obj));
+			currentMethod.setTime((new Date()).getTime() - time);
+			currentMethod.setCorrect(true);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-			res.setCorrect(TestResult.INCORRECT);
-			res.setExc(e);
-		} catch (InvocationTargetException err){
-			res.setCorrect(TestResult.INCORRECT);
-			String msg = err.getCause() == null ? err.getMessage() : err.getCause() .getMessage();
-			if (msg == null){
+			currentMethod.setCorrect(false);
+			currentMethod.setExc(e);
+		} catch (InvocationTargetException err) {
+			currentMethod.setCorrect(false);
+			String msg = err.getCause() == null ? err.getMessage() : err.getCause().getMessage();
+			if (msg == null) {
 				msg = "null";
 			}
-			res.setMsg("Error!!!!! " + msg.replaceAll("<","(").replaceAll(">",")"));
-			res.setExc(err.getCause());
+			currentMethod.setMsg("Error!!!!! " + msg.replaceAll("<", "(").replaceAll(">", ")"));
+			currentMethod.setExc(err.getCause());
 		} catch (InstantiationException e) {
 			e.printStackTrace();
-			res.setCorrect(TestResult.INCORRECT);
-			res.setExc(e);
+			currentMethod.setCorrect(false);
+			currentMethod.setExc(e);
 		}
-		//res.setLogs(Logger.getLogs());
-		return res;
+		currentMethod.setTestFinished(true);
+		// res.setLogs(Logger.getLogs());
+		return currentMethod;
 	}
 
 	@Override
 	public void setListToRun(List<String> itemsToRun) {
 		this.listToRun = itemsToRun;
 	}
-	
-	public void initListToRun(InputStream is) throws UnitTestingException{
-		if (listToRun == null){
+
+	public void initListToRun(InputStream is) throws UnitTestingException {
+		if (listToRun == null) {
 			ClassesFinder classFinder = new ClassesFinder(is);
 			listToRun = classFinder.find().getBasicTests();
 		}

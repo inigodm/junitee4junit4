@@ -7,8 +7,6 @@ import java.util.List;
 import com.inigo.testing.annotations.TemporallyUntestable;
 
 public class TestResult {
-	public static final boolean INCORRECT = false;
-	public static final boolean CORRECT = true;
 	String name;
 	Object returned = null;
 	String msg;
@@ -18,6 +16,7 @@ public class TestResult {
 	String reason = null;
 	long time;
 	boolean isCorrect = true;
+	boolean testFinished = false;
 	
 	public TestResult(Method method2) {
 		name = method2.getName();
@@ -95,6 +94,14 @@ public class TestResult {
 
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+
+	public boolean isTestFinished() {
+	    return testFinished;
+	}
+
+	public void setTestFinished(boolean testFinished) {
+	    this.testFinished = testFinished;
 	}
 	
 }

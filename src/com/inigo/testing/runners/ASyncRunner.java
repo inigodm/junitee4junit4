@@ -7,18 +7,18 @@ import java.util.List;
 import com.inigo.testing.exceptions.UnitTestingException;
 import com.inigo.testing.finders.ClassesFinder;
 import com.inigo.testing.results.TestClass;
-import com.inigo.testing.results.TestResult;
 
-public class ASyncRunner  implements Runner{
+public class ASyncRunner extends SimpleRunner {
 	List<TestClass> res = new ArrayList<TestClass>();
 	Thread t = null;
 	int i = 0;
 	boolean running;
 	ClassesFinder classFinder;
-	private List<String>  listToRun;
-	
-	public ASyncRunner(){
+	private List<String> listToRun;
+
+	public ASyncRunner() {
 	}
+
 	@Override
 	public void setListToRun(List<String> itemsToRun) {
 		this.listToRun = itemsToRun;
@@ -32,24 +32,23 @@ public class ASyncRunner  implements Runner{
 		return res;
 	}
 
-	private synchronized void runService(InputStream is)
-			throws UnitTestingException {
+	private synchronized void runService(InputStream is) throws UnitTestingException {
 		if (!running) {
 			initListToRun(is);
 			runInBackGround();
 		}
 		running = true;
 	}
-	
+
 	private void runInBackGround() throws UnitTestingException {
-		if (t != null && t.isAlive()){
+		if (t != null && t.isAlive()) {
 			return;
 		}
 		t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					buildResponse(res);
+					buildResponse();
 				} catch (UnitTestingException e) {
 					e.printStackTrace();
 				}
@@ -58,38 +57,44 @@ public class ASyncRunner  implements Runner{
 		});
 		t.start();
 	}
-	
-	private List<TestClass> buildResponse(List<TestClass> res) throws UnitTestingException{
-		for (String className : listToRun){
-			res.add(SimpleRunner.testClass(className, "extendido"));
+
+	protected List<TestClass> buildResponse() throws UnitTestingException {
+		for (String className : listToRun) {
+			currentClass = new TestClass();
+			res.add(currentClass);
+			testClass(className, mode);
 		}
 		return res;
 	}
-	
+
 	public void initListToRun(InputStream is) throws UnitTestingException {
 		if (listToRun == null) {
 			classFinder = new ClassesFinder(is);
 			listToRun = classFinder.find().getBasicTests();
 		}
 	}
-	
+
 	@Override
 	public void setMode(String mode) {
-		
+
 	}
-	
-	public List<TestClass> getResults(){
+
+	public List<TestClass> getResults() {
 		List<TestClass> res2 = new ArrayList<TestClass>();
 		synchronized (res) {
-			for (TestClass tc : res){
+			for (TestClass tc : res) {
 				res2.add(tc);
 			}
-			res.clear();
+			for (TestClass tc : res2) {
+				if (tc.isTestFinished()) {
+					res.remove(tc);
+				}
+			}
 		}
-		return res2;	
+		return res2;
 	}
 
 	public boolean isFinished() {
-		return !(running && t !=  null && t.isAlive());
+		return !(running && t != null && t.isAlive());
 	}
 }
