@@ -43,5 +43,4 @@ public class TestClass {
     public void setTestFinished(boolean testFinished) {
 	this.testFinished = testFinished;
     }
-
 }

@@ -17,9 +17,13 @@ public class TestResult {
 	long time;
 	boolean isCorrect = true;
 	boolean testFinished = false;
+	List<String> params = new ArrayList<String>();
 	
 	public TestResult(Method method2) {
 		name = method2.getName();
+		for (Class<?> type : method2.getParameterTypes()) {
+			params.add(type.getName());
+		}
 		TemporallyUntestable ann = method2.getAnnotation(TemporallyUntestable.class);
 		if (ann != null){
 			reason = ann.reason();
@@ -103,5 +107,12 @@ public class TestResult {
 	public void setTestFinished(boolean testFinished) {
 	    this.testFinished = testFinished;
 	}
+
+	public List<String> getParams() {
+		return params;
+	}
 	
+	public void addParams(String name) {
+		params.add(name);
+	}
 }

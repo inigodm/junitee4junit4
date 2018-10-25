@@ -41,11 +41,13 @@ public class TestingServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("doget");
 		ServletContext context = getServletContext();
+		//List<String> parameterNames = new ArrayList<String>(request.getParameterMap().keySet());
 		String mode = request.getParameter("mode");
 		try {
 			initTestRunner();
 			Runner sr = testRunner.newInstance();
 			sr.setMode(mode);
+			sr.setParameters(request.getParameterMap());
 			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
 			HTMLFormater form = new HTMLFormater(response.getWriter());
 			form.format(res);
@@ -75,6 +77,7 @@ public class TestingServlet extends HttpServlet {
 			initTestRunner();
 			Runner sr = new ClassFinderRunner();
 			sr.setMode(mode);
+			sr.setParameters(request.getParameterMap());
 			List<TestClass> res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
 			List<String> execute = new ArrayList<String>();
 			for (TestClass tc : res){

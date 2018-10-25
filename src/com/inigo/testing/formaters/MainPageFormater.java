@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import com.inigo.testing.results.TestClass;
+import com.inigo.testing.results.TestResult;
 
 public class MainPageFormater extends Formater{
 	
@@ -53,10 +54,24 @@ public class MainPageFormater extends Formater{
 	protected void printClasses(TestClass tc) {
 		pw.println("<table class='table table-striped' style='background-color:cyan; margin-bottom: 0px'>");
 		pw.println("<tbody>");
-		pw.println("<td style='background-color:#f0f0f0'>");
+		pw.println("<tr><td style='background-color:#f0f0f0'>");
 		pw.println("<input type='checkbox' name='" + tc.getName() + "' id='" + tc.getName() + "'/>");
-		pw.println("<label for='" + tc.getName() + "'>"+tc.getName()+"</label>");
-		pw.println("</td>");
+		pw.println("<label for='" + tc.getName() + "'>"+tc.getName()+"</label>");		
+		pw.println("</td></tr>");
+		for (TestResult tr : tc.getResults()) {
+			if (!tr.getParams().isEmpty()) {
+				pw.println("<tr>");
+				pw.println("<td style='background-color:#f0f0f0'>"+tr.getName()+"</td>");
+				pw.println("</tr>");
+				for (int i = 0; i < tr.getParams().size(); i++) {
+					String param = tr.getParams().get(i);
+					pw.println("<tr><td style='background-color:#f0f0f0'>");
+					pw.println("<label for='" + param + "'>" + param + "</label>");
+					pw.println("<input type='text' name='"+tc.getName()+"."+tr.getName()+"."+i+"' id='"+tc.getName()+"."+tr.getName()+"."+i+"'/>");
+					pw.println("</td></tr>");
+				}
+			}
+		}
 		pw.println("</tbody></table>");
 	}
 }

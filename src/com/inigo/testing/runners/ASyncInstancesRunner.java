@@ -8,20 +8,15 @@ import com.inigo.testing.exceptions.UnitTestingException;
 import com.inigo.testing.finders.ClassesFinder;
 import com.inigo.testing.results.TestClass;
 
-public class ASyncRunner extends SimpleRunner {
+
+public class ASyncInstancesRunner<T> extends InstancesRunner<T> {
 	List<TestClass> res = new ArrayList<TestClass>();
 	Thread t = null;
 	int i = 0;
 	boolean running;
 	ClassesFinder classFinder;
-	private List<String> listToRun;
 
-	public ASyncRunner() {
-	}
-
-	@Override
-	public void setListToRun(List<String> itemsToRun) {
-		this.listToRun = itemsToRun;
+	public ASyncInstancesRunner() {
 	}
 
 	@Override
@@ -59,7 +54,7 @@ public class ASyncRunner extends SimpleRunner {
 	}
 
 	protected List<TestClass> buildResponse() throws UnitTestingException {
-		for (String className : listToRun) {
+		for (T className : listToRun) {
 			currentClass = new TestClass();
 			res.add(currentClass);
 			testClass(className);
@@ -69,9 +64,13 @@ public class ASyncRunner extends SimpleRunner {
 
 	public void initListToRun(InputStream is) throws UnitTestingException {
 		if (listToRun == null) {
-			classFinder = new ClassesFinder(is);
-			listToRun = classFinder.find().getBasicTests();
+			new ArrayList<T>();
 		}
+	}
+
+	@Override
+	public void setMode(String mode) {
+
 	}
 
 	public List<TestClass> getResults() {

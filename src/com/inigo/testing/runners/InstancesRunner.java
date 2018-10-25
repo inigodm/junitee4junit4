@@ -10,71 +10,70 @@ import java.util.List;
 import java.util.Map;
 
 import com.inigo.testing.exceptions.UnitTestingException;
-import com.inigo.testing.finders.ClassesFinder;
 import com.inigo.testing.finders.MethodFinder;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
 
-public class SimpleRunner extends Runner<String> {
+
+public class InstancesRunner<T> extends Runner<T> {
 	protected BufferedReader br;
-	protected List<String> listToRun = null;
+	protected List<T> listToRun = null;
 	protected TestClass currentClass;
 	protected TestResult currentMethod;
 
-	public SimpleRunner(List<String> classNames) {
+	public InstancesRunner(List<T> classNames) {
 		this.listToRun = classNames;
 	}
 
-	public SimpleRunner() {
+	public InstancesRunner() {
 
 	}
 
 	public List<TestClass> run(InputStream is) throws UnitTestingException {
-		initListToRun(is);
+		initListToRun();
 		return buildResponse();
 	}
 
 	protected List<TestClass> buildResponse() throws UnitTestingException {
 		List<TestClass> res = new ArrayList<TestClass>();
-		for (String className : listToRun) {
+		for (T testCase : listToRun) {
 			currentClass = new TestClass();
 			res.add(currentClass);
-			testClass(className);
+			testClass(testCase);
 		}
 		return res;
 	}
 
-	public void testClass(String className) throws UnitTestingException {
-		System.out.println("testing " + className);
-		MethodFinder methodFinder = new MethodFinder(className);
-		currentClass.setName(className);
-		currentClass.setResults(calcResults(methodFinder));
+	public void testClass(T testCase) throws UnitTestingException {
+		System.out.println("testing " + testCase.getClass().getName());
+		MethodFinder methodFinder = new MethodFinder(testCase.getClass().getName());
+		currentClass.setName(testCase.getClass().getName());
+		currentClass.setResults(calcResults(testCase, methodFinder));
 		currentClass.setTestFinished(true);
 		System.out.println(currentClass);
 	}
 
-	public List<TestResult> calcResults(MethodFinder methodFinder) throws UnitTestingException {
+	public List<TestResult> calcResults(T testCase, MethodFinder methodFinder) throws UnitTestingException {
 		List<TestResult> res = currentClass.getResults();
 		methodFinder.find();
 		for (Method method : methodFinder.getTestsForMode(mode)) {
 			currentMethod = new TestResult(method);
 			res.add(currentMethod);
-			testMethod(method, methodFinder.getClazz());
+			testMethod(testCase, method);
 		}
 		for (Method method : methodFinder.getTemporallyUnavaliables()) {
 			currentMethod = new TestResult(method);
 			res.add(currentMethod);
-			testMethod(method, methodFinder.getClazz()).setAvaliable(false);
+			testMethod(testCase, method).setAvaliable(false);
 			currentMethod.setAvaliable(false);
 		}
 		return res;
 	}
 
-	private TestResult testMethod(Method method, Class clazz) {
+	private TestResult testMethod(T testCase, Method method) {
 		try {
-			Object obj = clazz.newInstance();
 			long time = (new Date()).getTime();
-			currentMethod.setReturned(executeMethod(method, obj));
+			currentMethod.setReturned(executeMethod(method, testCase));
 			currentMethod.setTime((new Date()).getTime() - time);
 			currentMethod.setCorrect(true);
 		} catch (IllegalAccessException e) {
@@ -89,25 +88,20 @@ public class SimpleRunner extends Runner<String> {
 			}
 			currentMethod.setMsg("Error!!!!! " + msg.replaceAll("<", "(").replaceAll(">", ")"));
 			currentMethod.setExc(err.getCause());
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-			currentMethod.setCorrect(false);
-			currentMethod.setExc(e);
-		}
+		} 
 		currentMethod.setTestFinished(true);
 		// res.setLogs(Logger.getLogs());
 		return currentMethod;
 	}
 
 	@Override
-	public void setListToRun(List<String> itemsToRun) {
+	public void setListToRun(List<T> itemsToRun) {
 		this.listToRun = itemsToRun;
 	}
 
-	public void initListToRun(InputStream is) throws UnitTestingException {
+	public void initListToRun() throws UnitTestingException {
 		if (listToRun == null) {
-			ClassesFinder classFinder = new ClassesFinder(is);
-			listToRun = classFinder.find().getBasicTests();
+			listToRun = new ArrayList<T>();
 		}
 	}
 }
