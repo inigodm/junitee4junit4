@@ -21,11 +21,7 @@ import com.inigo.testing.runners.Runner;
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
-	// Quite ugly, but functional: this way I can access both in tests
-	public static HttpServletRequest request = null;
-	public static HttpServletResponse response = null;
-	
-    /**
+	/**
      * @see HttpServlet#HttpServlet()
      */
     public MainServlet() {

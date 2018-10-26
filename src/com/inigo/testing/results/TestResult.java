@@ -2,8 +2,10 @@ package com.inigo.testing.results;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.inigo.testing.annotations.ParamConfiguration;
 import com.inigo.testing.annotations.TemporallyUntestable;
 
 public class TestResult {
@@ -17,18 +19,31 @@ public class TestResult {
 	long time;
 	boolean isCorrect = true;
 	boolean testFinished = false;
-	List<String> params = new ArrayList<String>();
+	List<String> paramNames = new ArrayList<String>();
+	List<String> paramValues = new ArrayList<String>();
 	
-	public TestResult(Method method2) {
-		name = method2.getName();
-		for (Class<?> type : method2.getParameterTypes()) {
-			params.add(type.getName());
-		}
-		TemporallyUntestable ann = method2.getAnnotation(TemporallyUntestable.class);
+	public TestResult(Method method) {
+		name = method.getName();
+		readParamsConfiguration(method);
+		TemporallyUntestable ann = method.getAnnotation(TemporallyUntestable.class);
 		if (ann != null){
 			reason = ann.reason();
 		}
 		time = 0;
+	}
+	
+	public void readParamsConfiguration(Method method) {
+		ParamConfiguration conf = method.getAnnotation(ParamConfiguration.class);
+		if (conf != null){
+			paramNames = Arrays.asList(conf.names());
+			paramValues = Arrays.asList(conf.defaultValues());
+		}
+		if (paramNames == null || paramNames.isEmpty()) {
+			for (Class<?> type : method.getParameterTypes()) {
+				paramNames.add(type.getName());
+			}
+		}
+		
 	}
 
 	public Object getReturned() {
@@ -108,11 +123,19 @@ public class TestResult {
 	    this.testFinished = testFinished;
 	}
 
-	public List<String> getParams() {
-		return params;
+	public List<String> getParamNames() {
+		return paramNames;
 	}
 	
-	public void addParams(String name) {
-		params.add(name);
+	public void addParamName(String name) {
+		paramNames.add(name);
+	}
+	
+	public List<String> getParamValues() {
+		return paramValues;
+	}
+	
+	public void addParamValue(String name) {
+		paramValues.add(name);
 	}
 }

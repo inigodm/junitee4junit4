@@ -52,26 +52,71 @@ public class MainPageFormater extends Formater{
 	}
 	
 	protected void printClasses(TestClass tc) {
-		pw.println("<table class='table table-striped' style='background-color:cyan; margin-bottom: 0px'>");
+		boolean flag = false;
+		for (TestResult tr : tc.getResults()) {
+			if (!tr.getParamNames().isEmpty()) {
+				flag = true;
+				break;
+			}
+		}
+		pw.println("<table class='table table-striped' style='background-color:#f0f0f0; margin-bottom: 0px'>");
 		pw.println("<tbody>");
 		pw.println("<tr><td style='background-color:#f0f0f0'>");
-		pw.println("<input type='checkbox' name='" + tc.getName() + "' id='" + tc.getName() + "'/>");
+		pw.println("<input type='checkbox' name='" + tc.getName() + "' id='" + tc.getName() + "' ");
+		if (flag) {
+			pw.println(" onclik='document.getElementById('btn" + tc.getName() + "').click();'/>");
+			pw.println("<button id='btn" + tc.getName() + "' type='button' class='btn' style='display:none' data-toggle='collapse' data-target='#functions" +tc.getName() +"'>e</button>");
+		}else {
+			pw.println("/>");
+		}
 		pw.println("<label for='" + tc.getName() + "'>"+tc.getName()+"</label>");		
 		pw.println("</td></tr>");
+		if(flag) {
+			drawAccordion(tc);
+		}
+		pw.println("</tbody></table>");
+	}
+	
+	protected void drawAccordion(TestClass tc) {
+    	pw.println("<tr style='background-color:#f0f0f0''><td colspan='2'>");
+		//pw.println("<div id='functions" +tc.getName() +"' class='collapse'>");
+    	pw.println("<div id='functions" +tc.getName() +"'>");
+		pw.println("<table class='table table-striped' style='background-color:#f0f0f0; margin-bottom: 0px'>");
+		pw.println("<tbody>");
 		for (TestResult tr : tc.getResults()) {
-			if (!tr.getParams().isEmpty()) {
+			if (!tr.getParamNames().isEmpty()) {
 				pw.println("<tr>");
 				pw.println("<td style='background-color:#f0f0f0'>"+tr.getName()+"</td>");
 				pw.println("</tr>");
-				for (int i = 0; i < tr.getParams().size(); i++) {
-					String param = tr.getParams().get(i);
+				for (int i = 0; i < tr.getParamNames().size(); i++) {
+					String param = tr.getParamNames().get(i);
+					String value = tr.getParamValues().get(i);
 					pw.println("<tr><td style='background-color:#f0f0f0'>");
 					pw.println("<label for='" + param + "'>" + param + "</label>");
-					pw.println("<input type='text' name='"+tc.getName()+"."+tr.getName()+"."+i+"' id='"+tc.getName()+"."+tr.getName()+"."+i+"'/>");
+					pw.println("<input type='text' name='"+tc.getName()+"."+tr.getName()+"."+i+"' id='"+tc.getName()+"."+tr.getName()+"."+i+"' value='" + value + "'/>");
 					pw.println("</td></tr>");
 				}
 			}
 		}
 		pw.println("</tbody></table>");
+		
+		pw.println("</div>");
+		pw.println("<td>");
+		pw.println("</tr>");
+    }
+	
+	private void scriptAccordion() {
+		pw.println("<script>");
+		pw.println("$(document).ready(function(){");
+		pw.println("$('.collapse.in').each(function(){");
+		pw.println("$(this).siblings('.panel-heading').find('input').prop('checked',true);");
+		pw.println("});");
+		pw.println("$('.collapse').on('show.bs.collapse', function(){");
+		pw.println("$(this).parent().find('input').prop('checked',true);");
+		pw.println("}).on('hide.bs.collapse', function(){");
+		pw.println("$(this).parent().find('input').prop('checked',false);");
+		pw.println("});");
+		pw.println("});");
+		pw.println("</script>");
 	}
 }

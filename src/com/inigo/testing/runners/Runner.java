@@ -30,7 +30,7 @@ public abstract class Runner<T> {
 		if (objs.length == 0) {
 			return method.invoke(obj);
 		}else {
-			return method.invoke(obj, objs);
+			return method.invoke(obj, (Object[])objs);
 		}
 	}
 
@@ -52,22 +52,6 @@ public abstract class Runner<T> {
 		res = objs.toArray(res);
 		return res;
 	}
-	
-	/*String[] createArguments(String[] arguments) {
-		String[] args = new String[arguments.length + 1];
-	    System.arraycopy(arguments, 0, args, 0, arguments.length);
-	    args[arguments.length] = sessionId;
-	    return args;
-	}
-
-	Class<?>[] createArgumentTypes(String[] arguments) {
-	    Class[] types = new Class[arguments.length + 1];
-	    for (int i = 0; i < arguments.length; i++) {
-	        types[i] = arguments[i].getClass();
-	    }
-	    types[arguments.length] = int.class;
-	    return types;
-	}*/
 	
 	private String obtainParam(String[] object, Class<?> clazz) {
 		return object[0];
