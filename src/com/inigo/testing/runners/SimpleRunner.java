@@ -20,6 +20,7 @@ public class SimpleRunner extends Runner<String> {
 	protected List<String> listToRun = null;
 	protected TestClass currentClass;
 	protected TestResult currentMethod;
+	protected Long time;
 
 	public SimpleRunner(List<String> classNames) {
 		this.listToRun = classNames;
@@ -73,7 +74,8 @@ public class SimpleRunner extends Runner<String> {
 	private TestResult testMethod(Method method, Class clazz) {
 		try {
 			Object obj = clazz.newInstance();
-			long time = (new Date()).getTime();
+			time = (new Date()).getTime();
+			currentMethod.setTime(time);
 			currentMethod.setReturned(executeMethod(method, obj));
 			currentMethod.setTime((new Date()).getTime() - time);
 			currentMethod.setCorrect(true);
@@ -109,5 +111,9 @@ public class SimpleRunner extends Runner<String> {
 			ClassesFinder classFinder = new ClassesFinder(is);
 			listToRun = classFinder.find().getBasicTests();
 		}
+	}
+
+	public Long getInitTime() {
+		return time;
 	}
 }
