@@ -21,6 +21,8 @@ public class TestResult {
 	boolean testFinished = false;
 	List<String> paramNames = new ArrayList<String>();
 	List<String> paramValues = new ArrayList<String>();
+
+	public TestResult(){}
 	
 	public TestResult(Method method) {
 		name = method.getName();

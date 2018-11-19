@@ -7,7 +7,7 @@ import com.inigo.testing.results.TestClass;
 import com.inigo.testing.results.TestResult;
 
 public class MainPageFormater extends Formater{
-	
+
 	public MainPageFormater(PrintWriter pw){
 		super(pw);
 	}
@@ -64,8 +64,8 @@ public class MainPageFormater extends Formater{
 		pw.println("<tr><td style='background-color:#f0f0f0'>");
 		pw.println("<input type='checkbox' name='" + tc.getName() + "' id='" + tc.getName() + "' ");
 		if (flag) {
-			pw.println(" onclik='document.getElementById('btn" + tc.getName() + "').click();'/>");
-			pw.println("<button id='btn" + tc.getName() + "' type='button' class='btn' style='display:none' data-toggle='collapse' data-target='#functions" +tc.getName() +"'>e</button>");
+			pw.println(" onclick=\"document.getElementById('btn" + tc.getName() + "').click();\"/>");
+			pw.println("<button id='btn" + tc.getName() + "' type='button' class='btn collapsed' style='display:none' data-toggle='collapse' data-target='#functions" +tc.getName() +"' aria-expanded=\"false\">e</button>");
 		}else {
 			pw.println("/>");
 		}
@@ -80,7 +80,7 @@ public class MainPageFormater extends Formater{
 	protected void drawAccordion(TestClass tc) {
     	pw.println("<tr style='background-color:#f0f0f0''><td colspan='2'>");
 		//pw.println("<div id='functions" +tc.getName() +"' class='collapse'>");
-    	pw.println("<div id='functions" +tc.getName() +"'>");
+    	pw.println("<div id='functions" +tc.getName() +"' class=\"collapse\" aria-expanded=\"false\">");
 		pw.println("<table class='table table-striped' style='background-color:#f0f0f0; margin-bottom: 0px'>");
 		pw.println("<tbody>");
 		for (TestResult tr : tc.getResults()) {

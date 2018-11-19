@@ -1,4 +1,5 @@
 package com.inigo.testing.formaters;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -58,12 +59,12 @@ public class HTMLFormater extends Formater{
 	
 	private LogDrawer logDrawerFactory(int index, TestResult tr){
 		if (!tr.isAvaliable()){
-			return new UnAvailableDrawer(pw, index);
+			return new UnAvailableDrawer(super.pw, index);
 		}else if (tr.isCorrect()){
-			return new OkDrawer(pw, index);
+			return new OkDrawer(super.pw, index);
 		}
 		else{
-			return new ErrorDrawer(pw, index);
+			return new ErrorDrawer(super.pw, index);
 		}
 	}
 
