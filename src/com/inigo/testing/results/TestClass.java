@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestClass {
-    String name;
+    String name = null;
+    String undoted = null;
     boolean testFinished = false;
     List<TestResult> results;
 
     public String getName() {
 	return name;
+    }
+    
+    public String getUndotedName() {
+    	if (undoted == null && name != null) {
+    		undoted = name.replaceAll("\\.", "");
+    	}
+    	return undoted;
     }
 
     public void setName(String name) {

@@ -59,51 +59,39 @@ public class MainPageFormater extends Formater{
 				break;
 			}
 		}
-		pw.println("<table class='table table-striped' style='background-color:#f0f0f0; margin-bottom: 0px'>");
-		pw.println("<tbody>");
-		pw.println("<tr><td style='background-color:#f0f0f0'>");
-		pw.println("<input type='checkbox' name='" + tc.getName() + "' id='" + tc.getName() + "' ");
+		pw.println("<div class=\"panel panel-default\">");
 		if (flag) {
-			pw.println(" onclick=\"document.getElementById('btn" + tc.getName() + "').click();\"/>");
-			pw.println("<button id='btn" + tc.getName() + "' type='button' class='btn collapsed' style='display:none' data-toggle='collapse' data-target='#functions" +tc.getName() +"' aria-expanded=\"false\">e</button>");
+			pw.println("<div data-toggle=\"collapse\" data-target=\"#functions" +tc.getUndotedName() +"\">\n");
+			pw.println("<input type='checkbox' name='" + tc.getName() + "' id='" + tc.getName() + "'/>");
+			pw.println("<label for='" + tc.getName() + "'>"+tc.getName()+"</label>");		
+			pw.println("</div>");
 		}else {
-			pw.println("/>");
+			pw.println("<input type='checkbox' name='" + tc.getName() + "' id='" + tc.getUndotedName() + "'/>");
+			pw.println("<label for='" + tc.getName() + "'>"+tc.getName()+"</label>");		
 		}
-		pw.println("<label for='" + tc.getName() + "'>"+tc.getName()+"</label>");		
-		pw.println("</td></tr>");
 		if(flag) {
 			drawAccordion(tc);
 		}
-		pw.println("</tbody></table>");
+		pw.println("</div>");
 	}
 	
 	protected void drawAccordion(TestClass tc) {
-    	pw.println("<tr style='background-color:#f0f0f0''><td colspan='2'>");
-		//pw.println("<div id='functions" +tc.getName() +"' class='collapse'>");
-    	pw.println("<div id='functions" +tc.getName() +"' class=\"collapse\" aria-expanded=\"false\">");
-		pw.println("<table class='table table-striped' style='background-color:#f0f0f0; margin-bottom: 0px'>");
-		pw.println("<tbody>");
+    	pw.println("<div id='functions" +tc.getUndotedName() +"' class=\"collapse\" aria-expanded=\"false\">");
 		for (TestResult tr : tc.getResults()) {
 			if (!tr.getParamNames().isEmpty()) {
-				pw.println("<tr>");
-				pw.println("<td style='background-color:#f0f0f0'>"+tr.getName()+"</td>");
-				pw.println("</tr>");
+				pw.println("<div class=\\\"panel panel-default\\\">");
+				pw.println("<label style='background-color:#f0f0f0'>"+tr.getName()+"</label>");
 				for (int i = 0; i < tr.getParamNames().size(); i++) {
 					String param = tr.getParamNames().get(i);
 					String value = tr.getParamValues().get(i);
-					pw.println("<tr><td style='background-color:#f0f0f0'>");
 					pw.println("<label for='" + param + "'>" + param + "</label>");
 					pw.println("<input type='text' name='"+tc.getName()+"."+tr.getName()+"."+i+"' id='"+tc.getName()+"."+tr.getName()+"."+i+"' value='" + value + "'/>");
-					pw.println("</td></tr>");
 				}
+				pw.println("</div>");
 			}
 		}
-		pw.println("</tbody></table>");
-		
 		pw.println("</div>");
-		pw.println("<td>");
-		pw.println("</tr>");
-    }
+	}
 	
 	private void scriptAccordion() {
 		pw.println("<script>");

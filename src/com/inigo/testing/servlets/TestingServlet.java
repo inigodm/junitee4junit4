@@ -17,6 +17,7 @@ import com.inigo.testing.formaters.HTMLFormater;
 import com.inigo.testing.results.TestClass;
 import com.inigo.testing.runners.ClassFinderRunner;
 import com.inigo.testing.runners.Runner;
+import com.inigo.testing.runners.SimpleRunner;
 
 /**
  * Servlet implementation class TestingServlet
@@ -27,7 +28,7 @@ public class TestingServlet extends HttpServlet {
 	// Quite ugly, but functional: this way I can access both in tests
 	public static HttpServletRequest request = null;
 	public static HttpServletResponse response = null;
-	public static Class<Runner> testRunner = null;
+	public static Class<SimpleRunner> testRunner = null;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -87,6 +88,7 @@ public class TestingServlet extends HttpServlet {
 			}
 			sr = testRunner.newInstance();
 			sr.setMode(mode);
+			sr.setParameters(request.getParameterMap());
 			sr.setListToRun(execute);	
 			res = sr.run(context.getResourceAsStream("/WEB-INF/testCase.txt"));
 			HTMLFormater form = new HTMLFormater(response.getWriter());
@@ -104,12 +106,13 @@ public class TestingServlet extends HttpServlet {
 	}
 	
 	private void initTestRunner() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException{
-		if (testRunner == null){
+		testRunner = SimpleRunner.class;
+		/*if (testRunner == null){
 			Properties p = new Properties();
 			p.load(getServletContext().getResourceAsStream("/WEB-INF/JUnitEE4Juni4.cfg"));
 			String className = p.getProperty("loadRunner");
 			testRunner = (Class<Runner>) Class.forName(className);
-		}
+		}*/
 	}
 
 }
